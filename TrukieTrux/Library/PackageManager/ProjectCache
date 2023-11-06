@@ -2828,6 +2828,8 @@ m_PackageAssets:
         - 1.0.6
         - 2.0.2
         - 2.0.3
+        - 2.0.4
+        - 2.0.5
         compatible:
         - 0.1.5-preview
         - 0.1.6-preview
@@ -2837,6 +2839,8 @@ m_PackageAssets:
         - 1.0.6
         - 2.0.2
         - 2.0.3
+        - 2.0.4
+        - 2.0.5
         verified: 1.0.6
       dependencies: []
       resolvedDependencies: []
@@ -2907,6 +2911,8 @@ m_PackageAssets:
         - 3.0.1
         - 3.0.2
         - 3.1.0
+        - 3.2.0
+        - 3.2.1
         compatible:
         - 1.0.0-preview.2
         - 1.0.0-preview.3
@@ -2922,6 +2928,8 @@ m_PackageAssets:
         - 3.0.1
         - 3.0.2
         - 3.1.0
+        - 3.2.0
+        - 3.2.1
         verified: 2.0.2
       dependencies: []
       resolvedDependencies: []
@@ -2990,6 +2998,11 @@ m_PackageAssets:
         - 1.7.0
         - 1.7.1
         - 1.8.1
+        - 1.8.2
+        - 1.9.0
+        - 1.10.1
+        - 1.11.0
+        - 1.12.0
         compatible:
         - 1.0.1
         - 1.1.0-pre.7
@@ -3011,6 +3024,11 @@ m_PackageAssets:
         - 1.7.0
         - 1.7.1
         - 1.8.1
+        - 1.8.2
+        - 1.9.0
+        - 1.10.1
+        - 1.11.0
+        - 1.12.0
         verified: 1.0.1
       dependencies:
       - name: com.unity.modules.unitywebrequest
