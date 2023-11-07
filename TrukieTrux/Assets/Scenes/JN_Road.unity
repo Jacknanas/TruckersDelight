@@ -2734,7 +2734,7 @@ MonoBehaviour:
   difficulty: 13
   length: 280
   straightAwayChance: 0.401
-  roadWidth: 7
+  roadWidth: 9
   splineMark: {fileID: 152162048}
   cube: {fileID: 6940155160006660520, guid: ec1562e1d181b774980f346828dfb13c, type: 3}
   sphere: {fileID: 9012271810362803857, guid: 28bbd3615fc969c45a326fcae10f1b29, type: 3}

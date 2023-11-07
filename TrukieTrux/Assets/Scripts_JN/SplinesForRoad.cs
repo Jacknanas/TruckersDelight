@@ -255,10 +255,30 @@ public class SplinesForRoad : MonoBehaviour
                 newVertices[1] = new Vector3(dummyVertices[v].x, 0f, dummyVertices[v].z - roadWidth);
 
             }
-            else
+            else 
             {
-                newVertices[v * 2] = new Vector3(dummyVertices[v].x, 0f, dummyVertices[v].z + roadWidth);
-                newVertices[v * 2 + 1] = new Vector3(dummyVertices[v].x, 0f, dummyVertices[v].z - roadWidth);
+
+                Vector2 direction_prev_to_next = new Vector2(0f,0f);
+
+                //Vector2 direction_prev_to_next = dummyVertices[v+1] - dummyVertices[v-1];
+
+                if (v < dummyVertices.Length-1)
+                {
+                    direction_prev_to_next = new Vector2(dummyVertices[v+1].x, dummyVertices[v+1].z) - new Vector2(dummyVertices[v-1].x, dummyVertices[v-1].z);
+                }
+                else
+                {
+                    direction_prev_to_next = new Vector2(dummyVertices[v].x, dummyVertices[v].z) - new Vector2(dummyVertices[v-1].x, dummyVertices[v-1].z);
+                }
+
+                direction_prev_to_next.Normalize();
+
+                Vector2 perpDir = Vector2.Perpendicular(direction_prev_to_next);
+
+
+
+                newVertices[v * 2] = new Vector3(dummyVertices[v].x + perpDir.x * roadWidth, 0f, dummyVertices[v].z + perpDir.y * roadWidth);
+                newVertices[v * 2 + 1] = new Vector3(dummyVertices[v].x - perpDir.x * roadWidth, 0f, dummyVertices[v].z - perpDir.y * roadWidth);
 
             }
 
@@ -328,21 +348,6 @@ public class SplinesForRoad : MonoBehaviour
 
         return normals;
 
-    }
-
-
-    int[] MakeTriangles(int num)
-    {
-        for (int t = 2; t < num; t++)
-        {
-            newTriangles[t - 2] = t-2;    
-            newTriangles[t - 1] = t-1;    
-            newTriangles[t] = t;    
-
-
-
-        }
-        return null;
     }
 
 
