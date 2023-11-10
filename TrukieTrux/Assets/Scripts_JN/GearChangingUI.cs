@@ -83,5 +83,9 @@ public class GearChangingUI : MonoBehaviour
         
     }
 
+    public int GetGear(){
+        return currentGearNumber;
+    }
+
 
 }
