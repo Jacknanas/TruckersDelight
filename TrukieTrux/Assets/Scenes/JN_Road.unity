@@ -1503,7 +1503,7 @@ MonoBehaviour:
   handleRB: {fileID: 698695534}
   mouseDetectDistance: 120
   yankDistance: 40
-  yankForce: 60
+  yankForce: 90
   isClutch: 0
   gearDisplay: {fileID: 740834182}
   gearIn: {fileID: 8300000, guid: b0caed1ef17941443ac01c79c7cce9ac, type: 3}
