@@ -107,7 +107,7 @@ public class SplinesForRoad : MonoBehaviour
     {
         
         int nodes = difficulty * 2 + 1;
-        float interDist = length * (nodes*0.3f) / (0.6f + difficulty * difficulty/4f);
+        float interDist = length * (nodes*0.5f) / (0.6f + difficulty * difficulty/4f);
         
 
 

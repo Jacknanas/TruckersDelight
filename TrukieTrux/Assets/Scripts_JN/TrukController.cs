@@ -15,17 +15,37 @@ public class TrukController : MonoBehaviour
     private float timeSinceStart;
     private bool stall = false;
     
-    public float maxSpeed = 10f;
 
     public float direction = 90;
     
+    [Header("Other Objects")]
     public GearChangingUI gearChangeUI;
+    public UI_DashInformation dashInfo;
+    public Transform particleSpawn;
+    public GameObject driveParticle;
+
+    public Transform boostParticleSpawn;
+    public GameObject boostParticle;
+
+    [Header("Driving Variables")]
     public float torque = 1;
+    public float maxSpeed = 10f;
+    public float acceleration = 2f;
+    public float turn = 10f;
+    public float breakSpeed = 0.5f;
+    public float boostForce = 100f;
+    public AnimationCurve accCurve;
+
+    [Header("Truck Variables")]
+    public float truckMass;
+    public float gravity;
+    public float truckHeight;
+
+    float currentMaxSpeed = 0f;
+    bool wasMaxSpeed = false;
 
     public GameObject restart;
-    public float turn = 10f;
 
-    public float breakSpeed = 0.5f;
 
 
     // public Vector3 RotateVectorAroundY(float angleDegrees, Vector3 originalVector)
@@ -56,8 +76,24 @@ public class TrukController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+        if (speed > currentMaxSpeed - 3f)
+        {
+            wasMaxSpeed = true;
+        }
+        else if (gear != 0 )
+        {
+            wasMaxSpeed = false;
+        }
+
         if(!stall){
-        
+
+
+            if(gear !=0 )
+            {
+                currentMaxSpeed = (maxSpeed * gear);
+            }
+    
             newGear = gearChangeUI.GetGear(); // Take Gear from the Shifter
             if(gear != newGear)
             {
@@ -68,39 +104,64 @@ public class TrukController : MonoBehaviour
                 if(gear !=0 )
                 {
                     lastGear = gear;
+                    currentMaxSpeed = (maxSpeed * gear);
                 }
+                
                 gear = newGear;
-            }
-            if(lastGear!=0 && (gear - lastGear) > 1){
-                stall = true; // Stalled their rig through overshifting
-                restart.SetActive(true);
+
+
+                if(lastGear!=0 && (gear - lastGear) > 1){
+                    stall = true; // Stalled their rig through overshifting
+                    restart.SetActive(true);
+                }
+
+                else if (wasMaxSpeed && gear !=0 && lastGear != 0) // BOOST ON SWITCH AT MAX SPEED
+                {
+                    rb.AddForce(transform.forward * boostForce * gear / 2f);
+                    Instantiate(boostParticle, boostParticleSpawn.position, Quaternion.identity, boostParticleSpawn).GetComponent<PartileLife>().Die();
+                }
+
+
             }
 
-            if (gear != 0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("w"))
+
+            if (gear != 0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("w")) // DRIVE
             {
                 if(speed < maxSpeed *gear){
-                    if(speed <= maxSpeed*gear){
-                        speed += 2f * Time.deltaTime;
+                    if(speed <= maxSpeed*gear)
+                    {
+                        var speedRel = (maxSpeed * gear) - speed;
+
+
+                        speed += (acceleration + 5f/gear) * Time.deltaTime * accCurve.Evaluate(speed / maxSpeed * gear);
                     }
                     
                 }
                 
+                if (Random.Range(1, 100) < 0.3 * maxSpeed*gear){
+                    Instantiate(driveParticle, particleSpawn.position, Quaternion.identity);
+
+                }
+                
+
             }
-            if(!Input.GetKey("w")){ // coast
+            if(!Input.GetKey("w") || Input.GetKey(KeyCode.Space) && Input.GetKey("w")){ // coast
                 if(gear != 0){
                     if(speed > 0)
                     {
-                        speed -= (1/(1*gear));
+                        speed -= (1/(1*gear)) * Time.deltaTime * acceleration;
                     }
                 }
                 else{
-                     if(speed > 0)
+                    if(speed > 0)
                     {
-                        speed -= (1/(1*(1+gear)));
+                        speed -= (1/(1*(1+gear)))* Time.deltaTime * acceleration;
                     }
                 }
             }
             if(Input.GetKey(KeyCode.Space)){
+                
+
                 if(Input.GetKeyDown("s")){ // break
                     if(speed > 0 ){
                         if(breakSpeed * gear > speed)
@@ -120,7 +181,7 @@ public class TrukController : MonoBehaviour
                         speed = 0;
                     }
                     else{
-                            speed -= Time.deltaTime;
+                        speed -= Time.deltaTime;
                     }
                         
                 }
@@ -128,49 +189,36 @@ public class TrukController : MonoBehaviour
             }
             else{
                 if(!Input.GetKey("w")){
-                    if(Time.deltaTime > speed)
+                    if(Time.deltaTime * acceleration > speed)
                     {
                         speed = 0;
                     }
                     else{
-                            speed -= Time.deltaTime;
+                        speed -= (Time.deltaTime * acceleration);
                     }
                 }
             }
-            if (Input.GetKey("a"))
+            if (Input.GetKey("a") )
             {
-                // if(rb.velocity.x > -speed){
-                //     velocity = new Vector3(-speed, 0f, 0f);  
-                //     rb.AddForce(velocity);
-                //  }
-            
-                //transform.Rotate(0, 1, 0, Space.Self);
-                //float turn = -10f;
 
                 rb.AddTorque(transform.up * Time.deltaTime * -turn);
             }
         
             if (Input.GetKey("d"))
             {
-                // if(rb.velocity.x < speed){
-                //     velocity = new Vector3(speed, 0f, 0f);  
-                //     rb.AddForce(velocity);
-                //  } 
-                
-                //direction +=1;
-                //float turn = 10f;
                 rb.AddTorque(transform.up * Time.deltaTime * turn);
                 
-                //transform.Rotate(0, -1, 0, Space.Self);
             }
         
             if (speed!=0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("s")) // You cant press the Break in gear
             {
                 stall = true;     
+                speed = 0f;
             }
-            Debug.Log("Speed: " + speed);
+            //Debug.Log("Speed: " + speed);
+            dashInfo.SetSpeedIndicator(rb, speed > currentMaxSpeed - 3f);
             rb.AddForce(transform.forward*speed);
-            //rb.AddForce(velocity * Time.deltaTime)
+
             //USE ADD FORCE WITH MOVEMENT Z AS CHECKED VARIABLES TO A MAXIMUM BASED ON VEHICLE  AND DECREASE TOWARDS ZERO WHEN NO DIRECTION IS APPLIED
         }
         else{
@@ -182,4 +230,16 @@ public class TrukController : MonoBehaviour
             }
         }
     }
+
+
+    void Update()
+    {
+        //RaycastHit hit;
+            
+        //if (!Physics.Raycast(transform.position, -transform.up, out hit, truckHeight))
+        //{
+        //    rb.AddForce(transform.up * - gravity * truckMass);
+        //}
+    }
+
 }

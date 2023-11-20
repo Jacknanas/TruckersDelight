@@ -21,12 +21,14 @@ public class GearBoxBuilder : MonoBehaviour
     [SerializeField] GameObject UpDownLeftRight;
     [SerializeField] GameObject UpLeft;
 
-
+    [Range(4, 16)]
+    public int numGears = 4;
 
     // Start is called before the first frame update
     void Start()
     {
-        GenerateGears(14);
+        GenerateGears(numGears);
+        //handleRb.gameObject.transform.position = new Vector3(xCoordinateOrigin, yCoordinateOrigin, 0f);
     }
 
     // Update is called once per frame
