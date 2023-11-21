@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/JN_Road.unity
+- path: Assets/Scenes/TruckStop_JN.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

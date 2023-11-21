@@ -6,6 +6,8 @@ public class PartileLife : MonoBehaviour
 {
     public float time;
 
+    public bool isUIRotateParticle  = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,4 +20,14 @@ public class PartileLife : MonoBehaviour
        
         Destroy(gameObject);
     }
+
+    void Update()
+    {
+        if (isUIRotateParticle)
+        {
+            transform.Rotate(0f, 0f, 5f * Time.deltaTime);
+        }
+    }
+
+
 }

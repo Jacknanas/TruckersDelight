@@ -35,19 +35,21 @@ public class TrukController : MonoBehaviour
     public float breakSpeed = 0.5f;
     public float boostForce = 100f;
     public AnimationCurve accCurve;
-
+    public float boostLength = 2.5f;
+        
     [Header("Truck Variables")]
     public float truckMass;
     public float gravity;
     public float truckHeight;
+    public float breakDrag;
 
     float currentMaxSpeed = 0f;
     bool wasMaxSpeed = false;
 
     public GameObject restart;
 
-
-
+    float boostTime = 0f;
+    bool isBoost = false;
     // public Vector3 RotateVectorAroundY(float angleDegrees, Vector3 originalVector)
     // {
     //     // Convert angle to radians
@@ -76,6 +78,19 @@ public class TrukController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+        if (isBoost)
+        {
+            rb.AddForce(transform.forward * boostForce * gear / 2f);
+
+            if (Time.time > boostTime + boostLength)
+            {
+                isBoost = false;
+            }
+
+        }
+
+
 
         if (speed > currentMaxSpeed - 3f)
         {
@@ -117,7 +132,10 @@ public class TrukController : MonoBehaviour
 
                 else if (wasMaxSpeed && gear !=0 && lastGear != 0) // BOOST ON SWITCH AT MAX SPEED
                 {
-                    rb.AddForce(transform.forward * boostForce * gear / 2f);
+                    rb.AddForce(transform.forward * boostForce * gear);
+
+                    isBoost = true;
+
                     Instantiate(boostParticle, boostParticleSpawn.position, Quaternion.identity, boostParticleSpawn).GetComponent<PartileLife>().Die();
                 }
 
@@ -162,20 +180,30 @@ public class TrukController : MonoBehaviour
             if(Input.GetKey(KeyCode.Space)){
                 
 
-                if(Input.GetKeyDown("s")){ // break
+                if(Input.GetKey("s")){ // break
+                    
+                    rb.drag = breakDrag;
+
+                    speed = rb.velocity.magnitude;
+
                     if(speed > 0 ){
+
+                        //speed = 0;
                         if(breakSpeed * gear > speed)
                         {
                             speed = 0;
                         }
                         else{
-                            speed -= breakSpeed * gear;
+                            speed -= breakSpeed * gear * gear * Time.deltaTime;   
+
                         }
                         
                         
                     }
                 } 
                 else{//Gear = 0 Clutch is In
+                    
+                
                     if(Time.deltaTime > speed)
                     {
                         speed = 0;
@@ -197,6 +225,8 @@ public class TrukController : MonoBehaviour
                         speed -= (Time.deltaTime * acceleration);
                     }
                 }
+
+                rb.drag = 1f;
             }
             if (Input.GetKey("a") )
             {
