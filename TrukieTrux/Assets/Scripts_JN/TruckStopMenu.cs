@@ -5,16 +5,17 @@ using UnityEngine.UI;
 
 public class TruckStopMenu : MonoBehaviour
 {
-
+    [Header("Animations")]
     public Animator moneyButton;
+    public Animator walletTab;
+    public Animator nextButton;
     public GameObject moneyParticleEffect;
     public float spawnRate;
     public int maxSpew = 100;
-
+    public Transform moneySpawn;
 
 
     bool isSpewing = false;
-    Transform buttonTransform;
 
     float lastSpewTime = 0f;
 
@@ -22,10 +23,17 @@ public class TruckStopMenu : MonoBehaviour
 
     void Start()
     {
-        buttonTransform = moneyButton.gameObject.transform;
+
     }
 
     public void OnMoneyButton()
+    {
+        moneyButton.SetTrigger("Clicked");
+        walletTab.SetTrigger("MoneyClick");
+        isSpewing = true;
+    }
+
+    public void OnNextButton()
     {
         moneyButton.SetTrigger("Clicked");
         isSpewing = true;
@@ -37,9 +45,14 @@ public class TruckStopMenu : MonoBehaviour
         if (isSpewing)
         {
             
-            if (Time.time > lastSpewTime + spawnRate + Random.Range(-0.1f,0.3f))
+            if (Time.time > lastSpewTime + spawnRate)
             {
-                Instantiate(moneyParticleEffect, buttonTransform.localPosition, Quaternion.identity, transform.parent);
+                float r = Random.Range(-25f, 25f);
+
+                Vector3 spawnPos = new Vector3(moneySpawn.position.x, moneySpawn.position.y + r, moneySpawn.position.z);
+
+
+                Instantiate(moneyParticleEffect, spawnPos, Quaternion.identity, moneySpawn);
                 spews++;
                 lastSpewTime = Time.time;
 
