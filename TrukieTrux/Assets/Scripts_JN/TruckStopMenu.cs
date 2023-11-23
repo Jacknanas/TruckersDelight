@@ -9,10 +9,24 @@ public class TruckStopMenu : MonoBehaviour
     public Animator moneyButton;
     public Animator walletTab;
     public Animator nextButton;
+    public Animator cameraDolly;
     public GameObject moneyParticleEffect;
     public float spawnRate;
     public int maxSpew = 100;
     public Transform moneySpawn;
+    public GameObject screenWipe;
+
+    [Header("Run Summary")]
+    public GameObject summaryPanel;
+    public GameObject walletPanel;
+
+    [Header("Garage")]
+    public GameObject garagePanels;
+    public GameObject jobCards;
+    public GameObject upgradePanel;
+
+
+    bool jobsOpen = false;
 
 
     bool isSpewing = false;
@@ -23,20 +37,29 @@ public class TruckStopMenu : MonoBehaviour
 
     void Start()
     {
-
+        summaryPanel.SetActive(true);
+        walletPanel.SetActive(true);
     }
 
     public void OnMoneyButton()
     {
         moneyButton.SetTrigger("Clicked");
-        walletTab.SetTrigger("MoneyClick");
+        
         isSpewing = true;
     }
 
     public void OnNextButton()
     {
-        moneyButton.SetTrigger("Clicked");
-        isSpewing = true;
+        Instantiate(screenWipe, new Vector3(0f,0f,0f), Quaternion.identity, transform.parent);
+        StartCoroutine(PanToGarage());
+    }
+
+    public void OnJobsButton()
+    {
+        if (!jobsOpen)
+            jobCards.SetActive(true);
+        else
+            jobCards.SetActive(false);
     }
 
 
@@ -59,10 +82,24 @@ public class TruckStopMenu : MonoBehaviour
                 if (spews >= maxSpew)
                 {
                     isSpewing = false;
+                    walletTab.SetTrigger("MoneyClick");
                 }
             }
 
         }
     }
+
+    IEnumerator PanToGarage()
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        cameraDolly.SetTrigger("NextScreen");
+        summaryPanel.SetActive(false);
+        walletPanel.SetActive(false);
+
+        garagePanels.SetActive(true);
+
+    }
+
 
 }

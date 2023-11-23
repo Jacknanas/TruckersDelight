@@ -108,5 +108,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f03e9ec7585ad5489a7411ac56f8d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 2.24
+  time: 2
   isUIRotateParticle: 1
