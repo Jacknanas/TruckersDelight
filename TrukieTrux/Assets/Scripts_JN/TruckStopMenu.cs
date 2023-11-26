@@ -8,7 +8,8 @@ public class TruckStopMenu : MonoBehaviour
     [Header("Animations")]
     public Animator moneyButton;
     public Animator walletTab;
-    public Animator nextButton;
+    public Animator jobsButton;
+    public Animator upgradesButton;
     public Animator cameraDolly;
     public GameObject moneyParticleEffect;
     public float spawnRate;
@@ -18,13 +19,25 @@ public class TruckStopMenu : MonoBehaviour
 
     [Header("Run Summary")]
     public GameObject summaryPanel;
+    public Run lastRun;
     public GameObject walletPanel;
     public List<RunCardUI> runCards;
+    public Text payAmount;
+
+    Run nextRun;
 
     [Header("Garage")]
     public GameObject garagePanels;
     public GameObject jobCards;
     public GameObject upgradePanel;
+    public List<UpgradeButtonUI> upgrades;
+    public List<SpecialUpgrade_UI> specialUpgrades;
+    public Text descriptionText;
+    public Color jobsDefault;
+    public Color goDefault;
+    public Color greyedOut;
+    public RunCardUI selectedRunSum;
+    public Animator goButton;
 
     [Header("PlayerInformation")]
     public int totalEarnings = 0;
@@ -32,6 +45,12 @@ public class TruckStopMenu : MonoBehaviour
     public int truck = 1;
     public int speedLevel = 1;
     public int masteredDifficulty = 1;
+    public TruckStats stats;
+
+    public Text playerMoneyTextSummaryScreen;
+    public Text playerMoneyTextGarageScreen;
+
+    public Text lifetimeTextGarageScreen;
 
     [Header("RunGeneration")]
     public List<string> firstNames;
@@ -40,7 +59,10 @@ public class TruckStopMenu : MonoBehaviour
     public int levelOnePay = 100;
 
     bool jobsOpen = false;
+    bool upgradesOpen = false;
+    bool isNextSumOpen = false;
 
+    bool hasSelected = false;
 
     bool isSpewing = false;
 
@@ -54,18 +76,63 @@ public class TruckStopMenu : MonoBehaviour
         walletPanel.SetActive(true);
 
 
-        for (int i = 0; i<30; i++)
+        goButton.gameObject.GetComponent<Image>().color = greyedOut;
+        jobsButton.gameObject.GetComponent<Image>().color = jobsDefault;
+
+        goButton.gameObject.GetComponent<Button>().enabled = false;
+
+        if (stats == null)
         {
-            Debug.Log(NameOfRun(JobType.Milk));
+            stats = new TruckStats();
         }
 
+        GetPlayerStats();
+
+        if (lastRun != null)
+        {
+            payAmount.text = $"{lastRun.pay} $";
+            maxSpew = Mathf.FloorToInt(lastRun.pay / 200f) + 1;
+        }
+        else
+        {
+            int manualPay = 2000;
+            payAmount.text = $"{manualPay} $";
+
+            maxSpew = Mathf.FloorToInt(manualPay / 200f) + 1;
+        }
+
+        
+
     }
+
+    public void GetPlayerStats()
+    {
+        totalEarnings = stats.lifeTimeBalance;
+        maxCargo = stats.cargoMax;
+        truck = (int) stats.truck;
+        speedLevel = stats.currentMaxSpeed;
+    }
+
 
     public void OnMoneyButton()
     {
         moneyButton.SetTrigger("Clicked");
         
         isSpewing = true;
+
+        if (lastRun != null)
+        {
+            stats.playerBalance += lastRun.pay;
+            stats.lifeTimeBalance += lastRun.pay;
+
+        }
+        else
+        {
+            stats.playerBalance += 2000;
+            stats.lifeTimeBalance += 2000;
+
+        }
+
     }
 
     public void OnNextButton()
@@ -76,10 +143,20 @@ public class TruckStopMenu : MonoBehaviour
 
     public void OnJobsButton()
     {
+        
+        jobsButton.SetTrigger("OnClick");
+
         if (!jobsOpen)
         {
             jobCards.SetActive(true);
             jobsOpen = true;
+
+            if (upgradesOpen)
+            {
+                upgradePanel.SetActive(false);
+                upgradesOpen = false;
+            }
+
             
         }
         else
@@ -89,6 +166,56 @@ public class TruckStopMenu : MonoBehaviour
         }
     }
 
+    public void OnUpgradesButton()
+    {
+        upgradesButton.SetTrigger("OnClick");
+
+        if (!upgradesOpen)
+        {
+            upgradePanel.SetActive(true);
+            upgradesOpen = true;
+            
+            if (jobsOpen)
+            {
+                jobCards.SetActive(false);
+                jobsOpen = false;
+            }
+            if (isNextSumOpen)
+            {
+                selectedRunSum.gameObject.SetActive(false);
+                isNextSumOpen = false;
+            }
+        }
+        else
+        {
+            upgradePanel.SetActive(false);
+            upgradesOpen = false;
+
+            if (!isNextSumOpen && hasSelected)
+            {
+                selectedRunSum.gameObject.SetActive(true);
+                isNextSumOpen = true;
+            }
+        }
+
+    }
+
+    public void SelectedRun(Run runToAdd)
+    {
+        nextRun = runToAdd;
+
+        selectedRunSum.SetCardInformation(nextRun);
+
+        selectedRunSum.gameObject.SetActive(true);
+        isNextSumOpen = true;
+        hasSelected = true;
+
+        goButton.gameObject.GetComponent<Image>().color = goDefault;
+        jobsButton.gameObject.GetComponent<Image>().color = greyedOut;
+
+        goButton.gameObject.GetComponent<Button>().enabled = true;
+        goButton.gameObject.GetComponent<Animator>().enabled = true;
+    }
 
     void Update()
     {
@@ -114,6 +241,11 @@ public class TruckStopMenu : MonoBehaviour
             }
 
         }
+
+        playerMoneyTextSummaryScreen.text = $"{stats.playerBalance} $";
+        playerMoneyTextGarageScreen.text = $"{stats.playerBalance} $";
+        lifetimeTextGarageScreen.text = $"{stats.lifeTimeBalance} $";
+
     }
 
     IEnumerator PanToGarage()
@@ -128,6 +260,86 @@ public class TruckStopMenu : MonoBehaviour
         ProduceNewRuns(totalEarnings+1, truck);
     }
 
+    public void Upgrade(UpgradeType type, int price)
+    {
+        
+        stats.playerBalance -= price;
+        //int typeNum = (int) type;
+
+        if (type == UpgradeType.MaxSpeed)  //this will add one gear
+        {
+            stats.currentMaxSpeed++;
+        }
+        else if (type == UpgradeType.CargoSpace) 
+        {
+            stats.cargoMax = Mathf.FloorToInt(stats.cargoMax + stats.cargoMax * 0.05f);
+        }
+        else if (type == UpgradeType.Acceleration) 
+        {
+            stats.acceleration = stats.acceleration + stats.acceleration * 0.05f;
+        }
+        else if (type == UpgradeType.Breaks) 
+        {
+            stats.breakDrag = stats.breakDrag + stats.breakDrag * 0.05f;
+        }
+        else if (type == UpgradeType.TurningPower) 
+        {
+            stats.turnPower = stats.turnPower + stats.turnPower * 0.05f;
+        }
+        else if (type == UpgradeType.TurboForce) 
+        {
+            stats.turboForce = stats.turboForce + stats.turboForce * 0.05f;
+        }
+        else if (type == UpgradeType.TruckType) 
+        {
+            int truckAsNum = (int) stats.truck;
+
+            stats.truck = (TruckType) truckAsNum+1;
+
+        }
+        else //wildcard
+        {
+            int random_up_ind = Random.Range(0, SpecialUpgradeDB.SpecialUpgrades.Count);
+
+            string nameOfUpgrade = SpecialUpgradeDB.SpecialUpgrades[random_up_ind].Name;
+
+            stats.AcquireNewSpecial(nameOfUpgrade);
+
+            bool placed = false;
+            for (int i = 0; i < specialUpgrades.Count; i++)
+            {
+                if (!specialUpgrades[i].isFull && !placed)
+                {
+                    specialUpgrades[i].AddUpgrade(SpecialUpgradeDB.SpecialUpgrades[random_up_ind], descriptionText);
+                    placed = true;
+                }
+
+            }
+
+        }
+
+        AssessUpgradeAvailabilities();
+        GetPlayerStats();
+    }
+
+    void AssessUpgradeAvailabilities()
+    {
+        foreach (UpgradeButtonUI upg in upgrades)
+        {
+
+            bool isGood = upg.GetAvailability(stats.playerBalance);
+
+            if (!isGood)
+            {
+                upg.buyButton.SetActive(false);
+            }
+            else
+            {
+                upg.buyButton.SetActive(true);
+            }
+
+        }
+    }
 
     public void ProduceNewRuns(int earnings, int truckLevel)
     {
@@ -161,7 +373,9 @@ public class TruckStopMenu : MonoBehaviour
 
         int difficulty = GetRunDifficulty(relativeDifficulty);
 
-        int time = Mathf.FloorToInt(30 * length * difficulty / speedLevel);
+        Debug.Log($"Diff {difficulty}");
+
+        int time = Mathf.FloorToInt(50f * length / (speedLevel*130f) * (4f / (3f + relativeDifficulty)));
 
         int pay = GetPay(relativeDifficulty, difficulty, length, jType, mass);
 
@@ -251,8 +465,8 @@ public class TruckStopMenu : MonoBehaviour
     int GetRunDifficulty(int rd)
     {
         
-        int d_l = masteredDifficulty;
-        int d_u = masteredDifficulty;
+        int d_l = 0;
+        int d_u = 0;
 
         if (rd == 0)
         {
@@ -266,12 +480,12 @@ public class TruckStopMenu : MonoBehaviour
         }
         else
         {
-            d_l = masteredDifficulty;
-            d_u = masteredDifficulty + 4;
+            d_l = masteredDifficulty + 1;
+            d_u = masteredDifficulty + 3;
         }
 
         d_l = Mathf.Clamp(d_l, 1, 23);
-        d_u = Mathf.Clamp(d_l, 1, 23);
+        d_u = Mathf.Clamp(d_u, 1, 23);
 
         return Random.Range(d_l, d_u);
     }
@@ -321,7 +535,6 @@ public class TruckStopMenu : MonoBehaviour
             typeMod = 4f;
         }
 
-        typeMod += (0.1f * rd);
 
         float pay = levelOnePay + (0.1f * diff * diff * levelOnePay) + (length/(levelOneRunLength*2f)) * (mass/levelOnePay);
         pay *= typeMod;
