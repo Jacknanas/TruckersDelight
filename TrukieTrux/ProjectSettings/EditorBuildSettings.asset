@@ -4,5 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMnu.unity
+    guid: f1d0b1fc60ba20c4d912b4c92c37f5db
+  - enabled: 1
+    path: Assets/Scenes/TruckStop_JN.unity
+    guid: 705c57cf2d54d0d4db780f79a92ac14b
+  - enabled: 1
+    path: Assets/Scenes/JN_Road 1.unity
+    guid: fa65457bc96adb848ad52054f8c31e3f
   m_configObjects: {}
