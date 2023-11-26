@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class RunCardUI : MonoBehaviour
-{
+{	
+	[Header("UI")]
 	public Text title;
 	public Text time;
 	public Text distance;
@@ -15,6 +16,13 @@ public class RunCardUI : MonoBehaviour
 
 	public Image typeImage;
 	public List<Sprite> typeIcons;
+
+	[Header("Button stuff")]
+	public Animator runSelectButton;
+	public TruckStopMenu menu;
+	public List<RunCardUI> otherCards;
+
+	Run storedRun;
 
 
 	public void SetCardInformation(Run run)
@@ -27,8 +35,40 @@ public class RunCardUI : MonoBehaviour
 		//type.text = run.type;
 		pay.text = run.pay.ToString();
 		
-		
+		typeImage.sprite = typeIcons[(int)run.type];
+		storedRun = run;
 	}
+
+	public void OnSelectClick()
+	{
+		runSelectButton.SetTrigger("OnClick");
+		runSelectButton.gameObject.SetActive(false);
+		gameObject.GetComponent<Animator>().SetTrigger("Picked");
+		StartCoroutine(GoAway());
+
+		menu.SelectedRun(storedRun);
+
+		foreach (RunCardUI card in otherCards)
+		{
+			card.OnNotSelected();
+		}
+
+	}
+
+	public void OnNotSelected()
+	{
+		runSelectButton.gameObject.SetActive(false);
+		gameObject.GetComponent<Animator>().SetTrigger("NotPicked");
+		StartCoroutine(GoAway());
+	}
+
+
+    IEnumerator GoAway()
+	{
+		yield return new WaitForSeconds(0.5f);
+		gameObject.SetActive(false);
+	}
+
 }
 
 public enum JobType{
