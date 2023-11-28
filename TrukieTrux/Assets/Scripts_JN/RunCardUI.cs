@@ -22,7 +22,21 @@ public class RunCardUI : MonoBehaviour
 	public TruckStopMenu menu;
 	public List<RunCardUI> otherCards;
 
+	public bool isGameTime = false;
+
 	Run storedRun;
+
+
+	void Start()
+	{
+		if (StaticStats.run != null && isGameTime)
+            ExtractRunData();
+	}
+
+	void ExtractRunData()
+	{
+		SetCardInformation(StaticStats.run);
+	}
 
 
 	public void SetCardInformation(Run run)

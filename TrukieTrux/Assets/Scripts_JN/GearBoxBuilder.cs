@@ -27,14 +27,17 @@ public class GearBoxBuilder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (StaticStats.truckStats != null)
+            ExtractTruckData();
+
+
         GenerateGears(numGears);
         //handleRb.gameObject.transform.position = new Vector3(xCoordinateOrigin, yCoordinateOrigin, 0f);
     }
 
-    // Update is called once per frame
-    void Update()
+    void ExtractTruckData()
     {
-        
+        numGears = StaticStats.truckStats.currentMaxSpeed;
     }
 
 

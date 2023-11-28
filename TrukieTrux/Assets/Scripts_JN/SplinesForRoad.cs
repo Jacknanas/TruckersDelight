@@ -29,6 +29,10 @@ public class SplinesForRoad : MonoBehaviour
     public GameObject cube;
     public GameObject sphere;
 
+    [Header("NPC Cars")]
+    public GameObject npcCar;
+    public Vector3 spawnPos;
+
 
     int current = 1;
 
@@ -52,7 +56,22 @@ public class SplinesForRoad : MonoBehaviour
 
         road.GetComponent<MeshFilter>().mesh = mesh;
         mesh.normals = UpNormals(mesh);
+
+        if (StaticStats.run != null)
+            ExtractRunData();
+        
     }
+
+    void ExtractRunData()
+    {
+        Run run = StaticStats.run;
+
+        length = run.length;
+        difficulty = run.difficulty;
+    }
+
+
+
 
     
     void FixedUpdate()
@@ -199,10 +218,31 @@ public class SplinesForRoad : MonoBehaviour
 
             anchors.Add(new_anc);
 
+            
         }
+
+        anchors.Add(LongStraightAwayAtEnd(anchors[anchors.Count-1], length * (difficulty/9f)));
 
         PlaceVertices();
     }
+
+    Anchor LongStraightAwayAtEnd(Anchor lastAnchor, float leng)
+    {
+        Vector2 direction_prev_to_next = new Vector2(0f,0f);
+
+        direction_prev_to_next = new Vector2(lastAnchor.handleA.x, lastAnchor.handleA.z) - new Vector2(lastAnchor.position.x, lastAnchor.position.z);
+
+        direction_prev_to_next.Normalize();
+
+
+        Vector3 newPos = new Vector3(lastAnchor.position.x + direction_prev_to_next.x * leng, 0f, lastAnchor.position.z + direction_prev_to_next.y * leng);
+        Vector3 newPosForB = new Vector3(lastAnchor.position.x + direction_prev_to_next.x * leng/2f, 0f, lastAnchor.position.z + direction_prev_to_next.y * leng/2f);
+        Vector3 newPosForA = new Vector3(lastAnchor.position.x + direction_prev_to_next.x * leng * 1.1f, 0f, lastAnchor.position.z + direction_prev_to_next.y * leng * 1.1f);
+        Anchor newAnc = new Anchor(newPos, newPosForA, newPosForB);
+
+        return newAnc;
+    }
+
 
     void PlaceVertices()
     {
@@ -331,6 +371,8 @@ public class SplinesForRoad : MonoBehaviour
 
         }
 
+        GameObject car = Instantiate(npcCar, spawnPos, Quaternion.identity);
+        car.GetComponent<NPC_Car>().Initiate(this);
         
 
     }
@@ -347,6 +389,35 @@ public class SplinesForRoad : MonoBehaviour
         }
 
         return normals;
+
+    }
+
+
+    public List<Vector3> PositionsForNPC()
+    {
+        List<Vector3> positionsToDish = new List<Vector3>();
+
+        for (int i = 0; i < anchors.Count; i++)
+        {
+            if (i == 0)
+            {
+                positionsToDish.Add(anchors[0].position);
+               // positionsToDish.Add(anchors[0].handleA);
+            }
+            else if (i < anchors.Count-1)
+            {
+                //positionsToDish.Add(anchors[i].handleB);
+                positionsToDish.Add(anchors[i].position);
+                //positionsToDish.Add(anchors[i].handleA);
+            }
+            else
+            {
+                //positionsToDish.Add(anchors[i].handleB);
+                positionsToDish.Add(anchors[i].position);
+            }
+        }
+
+        return positionsToDish;
 
     }
 

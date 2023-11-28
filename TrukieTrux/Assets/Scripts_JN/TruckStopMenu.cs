@@ -16,6 +16,9 @@ public class TruckStopMenu : MonoBehaviour
     public int maxSpew = 100;
     public Transform moneySpawn;
     public GameObject screenWipe;
+    public AudioSource buttonSounder;
+    public List<AudioClip> buttonSounds;
+    public AudioClip moneyButtonSound;
 
     [Header("Run Summary")]
     public GameObject summaryPanel;
@@ -81,6 +84,11 @@ public class TruckStopMenu : MonoBehaviour
 
         goButton.gameObject.GetComponent<Button>().enabled = false;
 
+        if (StaticStats.run != null)
+            lastRun = StaticStats.run;
+        if (StaticStats.truckStats != null)
+            stats = StaticStats.truckStats;
+
         if (stats == null)
         {
             stats = new TruckStats();
@@ -137,13 +145,16 @@ public class TruckStopMenu : MonoBehaviour
 
     public void OnNextButton()
     {
+        PlayButtonSound();
+
         Instantiate(screenWipe, new Vector3(0f,0f,0f), Quaternion.identity, transform.parent);
         StartCoroutine(PanToGarage());
     }
 
     public void OnJobsButton()
     {
-        
+        PlayButtonSound();
+
         jobsButton.SetTrigger("OnClick");
 
         if (!jobsOpen)
@@ -168,6 +179,8 @@ public class TruckStopMenu : MonoBehaviour
 
     public void OnUpgradesButton()
     {
+        PlayButtonSound();
+
         upgradesButton.SetTrigger("OnClick");
 
         if (!upgradesOpen)
@@ -202,6 +215,8 @@ public class TruckStopMenu : MonoBehaviour
 
     public void SelectedRun(Run runToAdd)
     {
+        PlayButtonSound();
+
         nextRun = runToAdd;
 
         selectedRunSum.SetCardInformation(nextRun);
@@ -215,7 +230,20 @@ public class TruckStopMenu : MonoBehaviour
 
         goButton.gameObject.GetComponent<Button>().enabled = true;
         goButton.gameObject.GetComponent<Animator>().enabled = true;
+
+
+        StaticStats.run = nextRun;
     }
+
+    void PlayButtonSound()
+    {
+        int randomSoundNum = Random.Range(0, buttonSounds.Count);
+
+        buttonSounder.clip = buttonSounds[randomSoundNum];
+
+        buttonSounder.Play();
+    }
+
 
     void Update()
     {
@@ -262,7 +290,7 @@ public class TruckStopMenu : MonoBehaviour
 
     public void Upgrade(UpgradeType type, int price)
     {
-        
+        PlayButtonSound();
         stats.playerBalance -= price;
         //int typeNum = (int) type;
 
@@ -320,6 +348,8 @@ public class TruckStopMenu : MonoBehaviour
 
         AssessUpgradeAvailabilities();
         GetPlayerStats();
+
+        StaticStats.truckStats = stats;
     }
 
     void AssessUpgradeAvailabilities()

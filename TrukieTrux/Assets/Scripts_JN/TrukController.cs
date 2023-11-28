@@ -35,6 +35,7 @@ public class TrukController : MonoBehaviour
     public float breakSpeed = 0.5f;
     public float boostForce = 100f;
     public AnimationCurve accCurve;
+    public AnimationCurve turnCurve;
     public float boostLength = 2.5f;
         
     [Header("Truck Variables")]
@@ -45,6 +46,8 @@ public class TrukController : MonoBehaviour
 
     float currentMaxSpeed = 0f;
     bool wasMaxSpeed = false;
+
+    float speedModifier = 1f;
 
     public GameObject restart;
 
@@ -73,7 +76,31 @@ public class TrukController : MonoBehaviour
         velocity = new Vector3(0f, 0f, 0f);
         restart.SetActive(false);
 
+        if (StaticStats.run != null)
+            ExtractRunData();
+        if (StaticStats.truckStats != null)
+            ExtractTruckData();
     }
+
+
+    void ExtractRunData()
+    {
+        Run run = StaticStats.run;
+
+        truckMass = run.mass;
+
+    }
+    void ExtractTruckData()
+    {
+        TruckStats stats = StaticStats.truckStats;
+
+        acceleration = stats.acceleration;
+        breakDrag = stats.breakDrag;
+        turn = stats.turnPower;
+        boostForce = stats.turboForce;
+        speedModifier = stats.speedModifier;
+    }
+
 
     // Update is called once per frame
     void FixedUpdate()
@@ -106,7 +133,7 @@ public class TrukController : MonoBehaviour
 
             if(gear !=0 )
             {
-                currentMaxSpeed = (maxSpeed * gear);
+                currentMaxSpeed = (maxSpeed * gear * speedModifier);
             }
     
             newGear = gearChangeUI.GetGear(); // Take Gear from the Shifter
@@ -228,15 +255,15 @@ public class TrukController : MonoBehaviour
 
                 rb.drag = 1f;
             }
-            if (Input.GetKey("a") )
+            if (Input.GetKey("a") && rb.velocity.magnitude > 0.05f)
             {
 
-                rb.AddTorque(transform.up * Time.deltaTime * -turn);
+                rb.AddTorque(transform.up * Time.deltaTime * -turn * turnCurve.Evaluate(rb.velocity.magnitude / 100f)*2f);
             }
         
-            if (Input.GetKey("d"))
+            if (Input.GetKey("d") && rb.velocity.magnitude > 0.05f)
             {
-                rb.AddTorque(transform.up * Time.deltaTime * turn);
+                rb.AddTorque(transform.up * Time.deltaTime * turn * turnCurve.Evaluate(rb.velocity.magnitude / 100f)*2f);
                 
             }
         
