@@ -30,9 +30,16 @@ public class SplinesForRoad : MonoBehaviour
     public GameObject sphere;
 
     [Header("NPC Cars")]
-    public GameObject npcCar;
+    public List<GameObject> npcCars;
     public Vector3 spawnPos;
+    public float spawnRate;
+    float lastSpawn;
 
+    [Header("Scale Gen")]
+    public GameObject weighInPrefab;
+    public Vector3 spawnDisplacement;
+    public float whereOnRoad = 0.5f;
+    public float spawnChance = 0.66f;
 
     int current = 1;
 
@@ -90,7 +97,7 @@ public class SplinesForRoad : MonoBehaviour
 
         }
         */
-
+        /*
         interpolateAmount = (interpolateAmount + Time.deltaTime) % 1f;
 
         splineMark.transform.position = CubicLerp(anchors[current-1].position, anchors[current-1].handleA, anchors[current].handleB, anchors[current].position, interpolateAmount);
@@ -103,6 +110,18 @@ public class SplinesForRoad : MonoBehaviour
         //Debug.Log($"current: {current}");
         if (current >= anchors.Count)
             current = 1;
+        */
+
+        if (Time.time > lastSpawn + spawnRate + UnityEngine.Random.Range(-1f, 4.5f))
+        {
+            GameObject car = Instantiate(npcCars[UnityEngine.Random.Range(0, npcCars.Count)], spawnPos, Quaternion.identity);
+            car.GetComponent<NPC_Car>().Initiate(this);
+            car.GetComponent<NPC_Car>().moveForce += UnityEngine.Random.Range(-35f, 65f);
+            car.GetComponent<NPC_Car>().carDist += UnityEngine.Random.Range(-4f, 4f);
+
+            lastSpawn = Time.time;
+        }
+
 
     }
 
@@ -171,7 +190,7 @@ public class SplinesForRoad : MonoBehaviour
                 //a_position = new Vector3(interDist/2f,0f,0f);
 
                 new_anc = new Anchor(anchor_position, a_position, b_position);
-                Instantiate(sphere, anchor_position, Quaternion.identity);
+                //Instantiate(sphere, anchor_position, Quaternion.identity);
             }
             else
             {
@@ -189,9 +208,9 @@ public class SplinesForRoad : MonoBehaviour
 
                 new_anc = new Anchor(anchor_position, a_position, b_position);
 
-                Instantiate(sphere, anchor_position, Quaternion.identity);
-                Instantiate(cube, a_position, Quaternion.identity);
-                Instantiate(cube, b_position, Quaternion.identity);
+                //Instantiate(sphere, anchor_position, Quaternion.identity);
+                //Instantiate(cube, a_position, Quaternion.identity);
+                //Instantiate(cube, b_position, Quaternion.identity);
             }
             /*{
                 //b_position = anchors[i-1].handleA;    
@@ -221,7 +240,7 @@ public class SplinesForRoad : MonoBehaviour
             
         }
 
-        anchors.Add(LongStraightAwayAtEnd(anchors[anchors.Count-1], length * (difficulty/9f)));
+        anchors.Add(LongStraightAwayAtEnd(anchors[anchors.Count-1], length * (difficulty/4.5f)));
 
         PlaceVertices();
     }
@@ -254,6 +273,12 @@ public class SplinesForRoad : MonoBehaviour
         for (int a = 1; a < anchors.Count; a++)
         {
             
+            if (a == Mathf.FloorToInt(anchors.Count/2f))
+            {
+                SpawnWeighIn(anchors[a]);
+            }
+
+
             for (float p = 0.00f; p < 1.00f; p += 0.02f)
             {
                 //newVertices[vertCounter] = CubicLerp(anchors[current-1].position, anchors[current-1].handleA, anchors[current].handleB, anchors[current].position, interpolateAmount);
@@ -371,8 +396,7 @@ public class SplinesForRoad : MonoBehaviour
 
         }
 
-        GameObject car = Instantiate(npcCar, spawnPos, Quaternion.identity);
-        car.GetComponent<NPC_Car>().Initiate(this);
+        
         
 
     }
@@ -392,6 +416,17 @@ public class SplinesForRoad : MonoBehaviour
 
     }
 
+    void SpawnWeighIn(Anchor nearAnchor)
+    {
+        Vector3 roadCent = nearAnchor.position;
+        
+        Vector3 spawnPosition = roadCent + spawnDisplacement;
+        if (UnityEngine.Random.Range(0.00f,1.00f) <= spawnChance)
+        {
+            GameObject newWeighIn = Instantiate(weighInPrefab, spawnPosition, Quaternion.identity);
+
+        }
+    }
 
     public List<Vector3> PositionsForNPC()
     {

@@ -125,7 +125,8 @@ public class TruckStopMenu : MonoBehaviour
     public void OnMoneyButton()
     {
         moneyButton.SetTrigger("Clicked");
-        
+        buttonSounder.clip = moneyButtonSound;
+        buttonSounder.Play();
         isSpewing = true;
 
         if (lastRun != null)
@@ -405,7 +406,7 @@ public class TruckStopMenu : MonoBehaviour
 
         Debug.Log($"Diff {difficulty}");
 
-        int time = Mathf.FloorToInt(50f * length / (speedLevel*130f) * (4f / (3f + relativeDifficulty)));
+        int time = Mathf.FloorToInt(50f * length / (speedLevel*130f) * (5f / (4f + relativeDifficulty))) + 75;
 
         int pay = GetPay(relativeDifficulty, difficulty, length, jType, mass);
 

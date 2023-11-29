@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TrukController : MonoBehaviour
 {
@@ -27,6 +28,10 @@ public class TrukController : MonoBehaviour
     public Transform boostParticleSpawn;
     public GameObject boostParticle;
 
+    public Text timeText;
+    public Text targetTimeText;
+
+
     [Header("Driving Variables")]
     public float torque = 1;
     public float maxSpeed = 10f;
@@ -44,8 +49,17 @@ public class TrukController : MonoBehaviour
     public float truckHeight;
     public float breakDrag;
 
+    [Header("Audio")]
+    public AudioSource revIdle;
+    public AudioSource turboRev;
+    public AudioClip idleSound;
+    public AudioClip revSound;
+
     float currentMaxSpeed = 0f;
     bool wasMaxSpeed = false;
+
+    bool isReversing = false;
+
 
     float speedModifier = 1f;
 
@@ -53,28 +67,20 @@ public class TrukController : MonoBehaviour
 
     float boostTime = 0f;
     bool isBoost = false;
-    // public Vector3 RotateVectorAroundY(float angleDegrees, Vector3 originalVector)
-    // {
-    //     // Convert angle to radians
-    //     float angleRadians = Mathf.Deg2Rad * angleDegrees;
 
-    //     // Create a quaternion for the rotation around the Y axis
-    //     Quaternion rotationQuaternion = Quaternion.Euler(0, angleDegrees, 0);
-
-    //     // Apply the rotation to the original vector
-    //     Vector3 rotatedVector = rotationQuaternion * originalVector;
-
-    //     return rotatedVector;
-    // }
-
+    float startTime = 0f;
 
     // Use this for initialization
     void Start()
     {
+        startTime = Time.time;
+
         rb = GetComponent<Rigidbody>();
         timeSinceStart = 0;
         velocity = new Vector3(0f, 0f, 0f);
         restart.SetActive(false);
+
+        revIdle.loop = true;
 
         if (StaticStats.run != null)
             ExtractRunData();
@@ -88,8 +94,9 @@ public class TrukController : MonoBehaviour
         Run run = StaticStats.run;
 
         truckMass = run.mass;
-
+        targetTimeText.text = run.expectedTime.ToString();
     }
+
     void ExtractTruckData()
     {
         TruckStats stats = StaticStats.truckStats;
@@ -105,6 +112,8 @@ public class TrukController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        
+        timeText.text = Mathf.FloorToInt(Time.time - startTime).ToString();
 
         if (isBoost)
         {
@@ -117,7 +126,17 @@ public class TrukController : MonoBehaviour
 
         }
 
+        if (isReversing)
+        {
+            if (Input.GetKey("s") && rb.velocity.magnitude < 8f)
+            {
+                rb.AddForce(transform.forward*-20f);
+                
+            }
 
+            speed = 0f;
+
+        }
 
         if (speed > currentMaxSpeed - 3f)
         {
@@ -134,6 +153,8 @@ public class TrukController : MonoBehaviour
             if(gear !=0 )
             {
                 currentMaxSpeed = (maxSpeed * gear * speedModifier);
+                revIdle.pitch = 0.5f + speed / (currentMaxSpeed*2f);
+                
             }
     
             newGear = gearChangeUI.GetGear(); // Take Gear from the Shifter
@@ -163,6 +184,10 @@ public class TrukController : MonoBehaviour
 
                     isBoost = true;
 
+                    turboRev.Play();
+                    turboRev.pitch = UnityEngine.Random.Range(0.65f, 1.5f);
+                    revIdle.Play();
+
                     Instantiate(boostParticle, boostParticleSpawn.position, Quaternion.identity, boostParticleSpawn).GetComponent<PartileLife>().Die();
                 }
 
@@ -170,7 +195,7 @@ public class TrukController : MonoBehaviour
             }
 
 
-            if (gear != 0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("w")) // DRIVE
+            if (gear != 0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("w") && !isReversing) // DRIVE
             {
                 if(speed < maxSpeed *gear){
                     if(speed <= maxSpeed*gear)
@@ -267,7 +292,7 @@ public class TrukController : MonoBehaviour
                 
             }
         
-            if (speed!=0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("s")) // You cant press the Break in gear
+            if (speed!=0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("s") && !isReversing) // You cant press the Break in gear
             {
                 stall = true;     
                 speed = 0f;
@@ -298,5 +323,16 @@ public class TrukController : MonoBehaviour
         //    rb.AddForce(transform.up * - gravity * truckMass);
         //}
     }
+
+    public void OnReverseButton()
+    {
+        if (isReversing)
+        {
+            isReversing = false;
+        }
+        else
+            isReversing = true;
+    }
+
 
 }

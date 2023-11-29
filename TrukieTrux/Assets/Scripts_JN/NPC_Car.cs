@@ -16,16 +16,26 @@ public class NPC_Car : MonoBehaviour
     public float moveInterval;
     public float waitTime;
     public float zDisplacement;
+    public float carDist = 5f;
+    public float passChance = 0.01f;
 
     float lastForce = 0f;
     bool isGoing = false;
 
+    bool isCarAhead = false;
+
     Rigidbody rb;
+
+
+    float initZDisp;
+
 
     public void Initiate(SplinesForRoad roader)
     {
         roadGen = roader;
         rb = GetComponent<Rigidbody>();
+
+        initZDisp = zDisplacement;
 
         StartCoroutine(SpawnWait());
 
@@ -46,7 +56,7 @@ public class NPC_Car : MonoBehaviour
 
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (Time.time > lastForce + moveInterval && isGoing)
         {
@@ -58,9 +68,40 @@ public class NPC_Car : MonoBehaviour
 
             dir = Vector3.Normalize(dir);
 
-            rb.AddForce(dir * moveForce);
 
             transform.LookAt(altTarget);
+
+            //lastForce = Time.time;
+
+            RaycastHit hit;
+
+            // Does the ray intersect any objects excluding the player layer
+            if (!Physics.Raycast(transform.position, transform.forward, out hit, carDist))
+            {
+                rb.AddForce(dir * moveForce);
+                
+            }
+            else
+            {
+                isCarAhead = true;
+            }
+
+        }
+
+        if (isCarAhead)
+        {
+            float rng = Random.Range(0.000f,1.000f);
+
+            if (rng < passChance && zDisplacement == initZDisp)
+            {
+                zDisplacement = 0f;
+                isCarAhead = false;
+            }
+            else if (rng < passChance && zDisplacement != initZDisp)
+            {
+                zDisplacement = initZDisp;
+                isCarAhead = false;
+            }
 
         }
 

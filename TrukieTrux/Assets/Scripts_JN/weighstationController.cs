@@ -31,11 +31,19 @@ public class weighstationController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.GetComponent<TrukController>() != null)
+        {
+            var mass = other.gameObject.GetComponent<TrukController>().truckMass;
+            tmp.text = $"{mass} kg";
+        }
+
+        /*
         if(persistant.getCargoWeight() == 0){
             tmp.text = "000000000";
         }
         else{
             tmp.text = persistant.getCargoWeight().ToString();
         }
+        */
     }
 }
