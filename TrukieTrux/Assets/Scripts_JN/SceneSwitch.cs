@@ -16,9 +16,34 @@ public class SceneSwitch : MonoBehaviour
     {
         
     }
-    public void Go(){
+    public void Go()
+    {
+        
+        StartCoroutine(GoDelay());
+
         //StaticStats.run = //assign Run here
         //StaticStats.truckStats = //assign truckStats here
+    }
+
+    IEnumerator GoDelay()
+    {
+        yield return new WaitForSeconds(1.2f);
         SceneManager.LoadScene (sceneBuildIndex:2);
+    }
+
+    public void ToEndAnim()
+    {
+        StartCoroutine(EndDelay());
+    }
+
+    IEnumerator EndDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene (sceneBuildIndex:3);
+    }
+
+    public void ToMenu()
+    {
+        SceneManager.LoadScene (sceneBuildIndex:1);
     }
 }

@@ -20,6 +20,8 @@ public class TruckStopMenu : MonoBehaviour
     public List<AudioClip> buttonSounds;
     public AudioClip moneyButtonSound;
 
+    public GameObject screenWipeDown;
+
     [Header("Run Summary")]
     public GameObject summaryPanel;
     public Run lastRun;
@@ -75,9 +77,8 @@ public class TruckStopMenu : MonoBehaviour
 
     void Start()
     {
-        summaryPanel.SetActive(true);
-        walletPanel.SetActive(true);
-
+        //startWipeUp.SetBool("IsUp", true);
+        
 
         goButton.gameObject.GetComponent<Image>().color = greyedOut;
         jobsButton.gameObject.GetComponent<Image>().color = jobsDefault;
@@ -109,9 +110,19 @@ public class TruckStopMenu : MonoBehaviour
             maxSpew = Mathf.FloorToInt(manualPay / 200f) + 1;
         }
 
-        
+        StartCoroutine(StartPanels());
 
     }
+
+    IEnumerator StartPanels()
+    {
+
+        yield return new WaitForSeconds(0.8f);
+
+        summaryPanel.SetActive(true);
+        walletPanel.SetActive(true);
+    }
+
 
     public void GetPlayerStats()
     {
@@ -121,6 +132,10 @@ public class TruckStopMenu : MonoBehaviour
         speedLevel = stats.currentMaxSpeed;
     }
 
+    public void OnGoButton()
+    {
+        Animator wipeDown = Instantiate(screenWipeDown, new Vector3(0f,1111f,0f), Quaternion.identity, transform.parent).GetComponent<Animator>();
+    }
 
     public void OnMoneyButton()
     {
@@ -128,6 +143,9 @@ public class TruckStopMenu : MonoBehaviour
         buttonSounder.clip = moneyButtonSound;
         buttonSounder.Play();
         isSpewing = true;
+
+        moneyButton.gameObject.GetComponent<Button>().enabled = false;
+
 
         if (lastRun != null)
         {

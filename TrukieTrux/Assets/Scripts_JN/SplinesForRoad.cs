@@ -41,17 +41,25 @@ public class SplinesForRoad : MonoBehaviour
     public float whereOnRoad = 0.5f;
     public float spawnChance = 0.66f;
 
-    int current = 1;
+    [Header("End Gen")]
+    public GameObject depotAtEnd;
+    public Vector3 depotDisplacement;
 
+    int current = 1;
 
     Vector3[] newVertices;
     Vector2[] newUV;
     int[] newTriangles;
 
+    List<Vector3> dumdumList;
 
     // Start is called before the first frame update
     void Start()
     {
+
+        if (StaticStats.run != null)
+            ExtractRunData();
+
         anchors.Clear();
         CreateRoad();
 
@@ -64,8 +72,10 @@ public class SplinesForRoad : MonoBehaviour
         road.GetComponent<MeshFilter>().mesh = mesh;
         mesh.normals = UpNormals(mesh);
 
-        if (StaticStats.run != null)
-            ExtractRunData();
+        TerrainCollider mc = road.AddComponent<TerrainCollider>();
+        //mc.sharedMesh = mesh;
+
+        
         
     }
 
@@ -265,7 +275,7 @@ public class SplinesForRoad : MonoBehaviour
 
     void PlaceVertices()
     {
-        List<Vector3> dumdumList = new List<Vector3>();
+        dumdumList = new List<Vector3>();
 
 
         int vertCounter = 0;
@@ -278,21 +288,46 @@ public class SplinesForRoad : MonoBehaviour
                 SpawnWeighIn(anchors[a]);
             }
 
-
-            for (float p = 0.00f; p < 1.00f; p += 0.02f)
+            else if (a == anchors.Count-1)
             {
-                //newVertices[vertCounter] = CubicLerp(anchors[current-1].position, anchors[current-1].handleA, anchors[current].handleB, anchors[current].position, interpolateAmount);
-                //dummyVertices[vertCounter] = CubicLerp(anchors[a-1].position, anchors[a-1].handleA, anchors[a].handleB, anchors[a].position, p);
+                SpawnEnd(anchors[a]);
+            }
+
+            if (a == anchors.Count -1)
+            {
+                for (float p = 0.00f; p < 1.00f; p += 0.01f)
+                {
+                    //newVertices[vertCounter] = CubicLerp(anchors[current-1].position, anchors[current-1].handleA, anchors[current].handleB, anchors[current].position, interpolateAmount);
+                    //dummyVertices[vertCounter] = CubicLerp(anchors[a-1].position, anchors[a-1].handleA, anchors[a].handleB, anchors[a].position, p);
                 
-                dumdumList.Add(CubicLerp(anchors[a-1].position, anchors[a-1].handleA, anchors[a].handleB, anchors[a].position, p));
+                    dumdumList.Add(CubicLerp(anchors[a-1].position, anchors[a-1].handleA, anchors[a].handleB, anchors[a].position, p));
 
-                //Debug.Log($"vc {vertCounter}");
+                    //Debug.Log($"vc {vertCounter}");
 
-                //Vector3 debugPos = new Vector3(newVertices[vertCounter].x,newVertices[vertCounter].y + 10f,newVertices[vertCounter].z);
-                //Instantiate(cube, debugPos, Quaternion.identity);
+                    //Vector3 debugPos = new Vector3(newVertices[vertCounter].x,newVertices[vertCounter].y + 10f,newVertices[vertCounter].z);
+                    //Instantiate(cube, debugPos, Quaternion.identity);
 
-                vertCounter++;
+                    vertCounter++;
 
+                }
+            }
+            else
+            {
+                for (float p = 0.00f; p < 1.00f; p += 0.01f) // was incrementing by 0.02
+                {
+                    //newVertices[vertCounter] = CubicLerp(anchors[current-1].position, anchors[current-1].handleA, anchors[current].handleB, anchors[current].position, interpolateAmount);
+                    //dummyVertices[vertCounter] = CubicLerp(anchors[a-1].position, anchors[a-1].handleA, anchors[a].handleB, anchors[a].position, p);
+                
+                    dumdumList.Add(CubicLerp(anchors[a-1].position, anchors[a-1].handleA, anchors[a].handleB, anchors[a].position, p));
+
+                    //Debug.Log($"vc {vertCounter}");
+
+                    //Vector3 debugPos = new Vector3(newVertices[vertCounter].x,newVertices[vertCounter].y + 10f,newVertices[vertCounter].z);
+                    //Instantiate(cube, debugPos, Quaternion.identity);
+
+                    vertCounter++;
+
+                }
             }
 
 
@@ -398,9 +433,13 @@ public class SplinesForRoad : MonoBehaviour
 
         
         
-
+        
     }
 
+    public List<Vector3> GetMiddles()
+    {
+        return dumdumList;
+    }
 
     Vector3[] UpNormals(Mesh mesh)
     {
@@ -427,6 +466,18 @@ public class SplinesForRoad : MonoBehaviour
 
         }
     }
+
+    void SpawnEnd(Anchor nearAnchor)
+    {
+        Vector3 roadCent = nearAnchor.position;
+
+        Vector3 spawnPosition = roadCent + depotDisplacement;
+
+        GameObject newEnd = Instantiate(depotAtEnd, spawnPosition, Quaternion.identity);
+
+        
+    }
+
 
     public List<Vector3> PositionsForNPC()
     {

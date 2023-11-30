@@ -493,7 +493,7 @@ MonoBehaviour:
   roadGen: {fileID: 0}
   moveForce: 120
   moveInterval: 0.8
-  waitTime: 0.28
+  waitTime: 0
   zDisplacement: -9
   carDist: 12.1
   passChance: 0.01
@@ -538,7 +538,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 6ad122f089d392f49a6591930849f257, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.922
+  m_Volume: 0.95
   m_Pitch: 1.17
   Loop: 1
   Mute: 0

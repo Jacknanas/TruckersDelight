@@ -21,7 +21,7 @@ public class NPC_Car : MonoBehaviour
 
     float lastForce = 0f;
     bool isGoing = false;
-
+    bool isRap = false;
     bool isCarAhead = false;
 
     Rigidbody rb;
@@ -105,6 +105,24 @@ public class NPC_Car : MonoBehaviour
 
         }
 
+        if (isRap)
+        {
+            transform.Translate(Vector3.up * Time.deltaTime * 5f);
+            transform.Translate(Vector3.forward * Time.deltaTime * 0.7f);
+            transform.Rotate(0f, 0f, 0.6f* Time.deltaTime);
+
+            //rb.AddTorque(Vector3.up * Time.deltaTime * 1f);
+
+            if (transform.position.y > 90f)
+            {
+                Destroy(gameObject);
+            }
+
+        }
+
+        if (transform.position.x > targetPositions[targetPositions.Count-1].x-2.5f)
+            Rapturize();
+
 
     }
 
@@ -116,6 +134,7 @@ public class NPC_Car : MonoBehaviour
                     
             if (targetPositions[i].x > transform.position.x)
             {
+
                 return i;
             }
         }
@@ -136,4 +155,11 @@ public class NPC_Car : MonoBehaviour
         }*/
     }
 
+
+    void Rapturize()
+    {
+        isGoing = false;
+        isRap = true;
+
+    }
 }

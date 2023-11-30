@@ -33,7 +33,7 @@ public class GearChangingUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)&& !isReversing)    
+        if (Input.GetKeyDown(KeyCode.Space) && !isReversing)    
         {
             handleAnimator.SetBool("IsClutch", true);
             isClutch = true;

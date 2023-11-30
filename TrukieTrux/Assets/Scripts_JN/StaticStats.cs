@@ -6,4 +6,7 @@ public static class StaticStats
 {
     public static Run run { get; set; }
     public static TruckStats truckStats { get; set; }
+
+    public static float remainingMass;
+    public static int timeElapsed;
 }

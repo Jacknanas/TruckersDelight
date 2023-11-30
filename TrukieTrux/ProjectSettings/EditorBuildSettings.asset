@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/JN_Road 1.unity
     guid: fa65457bc96adb848ad52054f8c31e3f
+  - enabled: 1
+    path: Assets/Scenes/End Cut.unity
+    guid: 387703bd8a4764a47952f415bfc5db97
   m_configObjects: {}

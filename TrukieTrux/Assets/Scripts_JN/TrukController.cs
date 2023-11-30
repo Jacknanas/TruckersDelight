@@ -31,6 +31,11 @@ public class TrukController : MonoBehaviour
     public Text timeText;
     public Text targetTimeText;
 
+    public Text countDownText;
+
+    public SplinesForRoad roadManager;
+
+    public GameObject screenWipeDown;
 
     [Header("Driving Variables")]
     public float torque = 1;
@@ -42,12 +47,17 @@ public class TrukController : MonoBehaviour
     public AnimationCurve accCurve;
     public AnimationCurve turnCurve;
     public float boostLength = 2.5f;
-        
+    public LayerMask road;
+
+
     [Header("Truck Variables")]
     public float truckMass;
     public float gravity;
     public float truckHeight;
     public float breakDrag;
+
+    bool hasForceField = false;
+    bool hasTruckersCap = false;
 
     [Header("Audio")]
     public AudioSource revIdle;
@@ -58,8 +68,11 @@ public class TrukController : MonoBehaviour
     float currentMaxSpeed = 0f;
     bool wasMaxSpeed = false;
 
+    public int timeElapsed;
+
     bool isReversing = false;
 
+    bool isWaiting = true;
 
     float speedModifier = 1f;
 
@@ -70,10 +83,16 @@ public class TrukController : MonoBehaviour
 
     float startTime = 0f;
 
+    List<Vector3> middleVerts;
+
+
     // Use this for initialization
     void Start()
     {
-        startTime = Time.time;
+
+        StartCoroutine(StartDelay());
+
+        maxSpeed *= speedModifier;
 
         rb = GetComponent<Rigidbody>();
         timeSinceStart = 0;
@@ -109,11 +128,79 @@ public class TrukController : MonoBehaviour
     }
 
 
+    IEnumerator StartDelay()
+    {
+        countDownText.text = "10";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "9";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "8";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "7";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "6";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "5";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "4";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "3";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "2";
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "1";
+        middleVerts = roadManager.GetMiddles();
+        Debug.Log($"GOT: {middleVerts.Count} from dumdum");
+        yield return new WaitForSeconds(1f);
+        countDownText.text = "GO";
+        isWaiting = false;
+        startTime = Time.time;
+        yield return new WaitForSeconds(1f);
+        countDownText.gameObject.SetActive(false);
+        
+
+        
+    }
+
+    void OnForceField(float strength, float radius)
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius);
+        foreach (var hitCollider in hitColliders)
+        {
+            Vector3 forceDir = Vector3.Normalize(hitCollider.gameObject.transform.position - transform.position);
+            
+            if (hitCollider.gameObject.GetComponent<Rigidbody>() != null)
+                hitCollider.gameObject.GetComponent<Rigidbody>().AddForce(forceDir * strength);
+        }
+    }
+
+    float GetGroundMod()
+    {
+        if (AssessOnRoad())
+        {
+            //Debug.Log("on road");
+            return 1f;
+        }
+        else if (hasTruckersCap)
+        {
+            return 0.75f;
+        }
+        //Debug.Log("OFF road");
+        return 0.5f;
+    }
+
+
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (isWaiting)
+            return;
         
-        timeText.text = Mathf.FloorToInt(Time.time - startTime).ToString();
+        timeElapsed = Mathf.FloorToInt(Time.time - startTime);
+
+        timeText.text = timeElapsed.ToString();
+
+        //speed *= GetGroundMod();
 
         if (isBoost)
         {
@@ -125,6 +212,12 @@ public class TrukController : MonoBehaviour
             }
 
         }
+
+        if (hasForceField && Input.GetKey("f"))
+        {
+            OnForceField(90f, 30f);
+        }
+
 
         if (isReversing)
         {
@@ -152,7 +245,7 @@ public class TrukController : MonoBehaviour
 
             if(gear !=0 )
             {
-                currentMaxSpeed = (maxSpeed * gear * speedModifier);
+                currentMaxSpeed = (maxSpeed * gear);
                 revIdle.pitch = 0.5f + speed / (currentMaxSpeed*2f);
                 
             }
@@ -299,7 +392,7 @@ public class TrukController : MonoBehaviour
             }
             //Debug.Log("Speed: " + speed);
             dashInfo.SetSpeedIndicator(rb, speed > currentMaxSpeed - 3f);
-            rb.AddForce(transform.forward*speed);
+            rb.AddForce(transform.forward*speed * GetGroundMod());
 
             //USE ADD FORCE WITH MOVEMENT Z AS CHECKED VARIABLES TO A MAXIMUM BASED ON VEHICLE  AND DECREASE TOWARDS ZERO WHEN NO DIRECTION IS APPLIED
         }
@@ -334,5 +427,32 @@ public class TrukController : MonoBehaviour
             isReversing = true;
     }
 
+    bool AssessOnRoad()
+    {
+        return roadManager.roadWidth+2f >= Mathf.Abs(Vector3.Distance(transform.position, middleVerts[GetClosestPosId()]));
+    }
+
+
+
+    int GetClosestPosId()
+    {
+
+        for (int i = 0; i < middleVerts.Count; i++)
+        {
+                    
+            if (middleVerts[i].x > transform.position.x)
+            {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+
+    public void WipeDownSpawn()
+    {
+        Instantiate(screenWipeDown, new Vector3(0f,1111f,0f), Quaternion.identity, transform.parent).GetComponent<Animator>();
+    }
 
 }
