@@ -18,7 +18,7 @@ public class NPC_Car : MonoBehaviour
     public float zDisplacement;
     public float carDist = 5f;
     public float passChance = 0.01f;
-    public LayerMask carIgnore;
+    public LayerMask carLayer;
 
     public bool isZigZagger = false;
     Vector3 lastTarget;
@@ -80,7 +80,7 @@ public class NPC_Car : MonoBehaviour
             RaycastHit hit;
 
             // Does the ray intersect any objects excluding the player layer
-            if (!Physics.Raycast(transform.position, transform.forward, out hit, carDist, carIgnore))
+            if (!Physics.Raycast(transform.position, transform.forward, out hit, carDist, carLayer))
             {
                 rb.AddForce(dir * moveForce);
                 
@@ -89,6 +89,13 @@ public class NPC_Car : MonoBehaviour
             {
                 isCarAhead = true;
             }
+
+            //if (Physics.Raycast(transform.position, transform.forward, out hit, carDist))
+            //{
+            //    Debug.Log("TOUCHING");
+                
+            //}
+
 
         }
 

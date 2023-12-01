@@ -135,7 +135,7 @@ public class SplinesForRoad : MonoBehaviour
             GameObject car = Instantiate(npcCars[UnityEngine.Random.Range(0, npcCars.Count)], spawnPos, Quaternion.identity);
             car.GetComponent<NPC_Car>().Initiate(this);
             car.GetComponent<NPC_Car>().moveForce += UnityEngine.Random.Range(-35f, 65f);
-            car.GetComponent<NPC_Car>().carDist += UnityEngine.Random.Range(-4f, 4f);
+            car.GetComponent<NPC_Car>().carDist += UnityEngine.Random.Range(-0.3f, 9.6f);
 
             if (UnityEngine.Random.Range(0.00f, 1.00f) <= zigzagChance)
             {

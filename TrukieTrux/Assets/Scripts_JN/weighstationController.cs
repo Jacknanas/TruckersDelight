@@ -13,6 +13,8 @@ public class weighstationController : MonoBehaviour
     public GameObject cop;
     public Transform spawnPoint;
 
+    public AudioSource bleep;
+
     Transform player;
     bool hasWeighed = false;
 
@@ -52,6 +54,7 @@ public class weighstationController : MonoBehaviour
             var mass = other.gameObject.GetComponent<TrukController>().truckMass;
             tmp.text = $"{mass} kg";
             hasWeighed = true;
+            bleep.Play();
         }
 
         /*

@@ -13,4 +13,7 @@ public static class StaticStats
     public static AudioClip song;
 
     public static float volume = 1f;
+
+    public static int masteredDiff = 2;
+
 }

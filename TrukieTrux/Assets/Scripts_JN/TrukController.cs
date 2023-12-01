@@ -445,7 +445,7 @@ public class TrukController : MonoBehaviour
         
             if (speed!=0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("s") && !isReversing) // You cant press the Break in gear
             {
-                speed -= (Time.deltaTime * (breakDrag - 0.5f));
+                speed -= (Time.deltaTime * (breakDrag * 0.5f));
                 
                 stallMeter += (Time.deltaTime * 40f);
 
@@ -572,11 +572,15 @@ public class TrukController : MonoBehaviour
                 crashSounder.volume = volume;
                 crashSounder.Play();
 
-                ContactPoint contact = collision.contacts[0];
-                Instantiate(boxesFlying, contact.point, Quaternion.identity, transform);
+                if (timeElapsed > 10f)
+                {
+                    ContactPoint contact = collision.contacts[0];
+                    Instantiate(boxesFlying, contact.point, Quaternion.identity, transform);
 
 
-                truckMass -= GetMassLoss(impact);
+                    truckMass -= GetMassLoss(impact);
+
+                }
 
                 Debug.Log($"Mass at: {truckMass}");
 
@@ -605,11 +609,11 @@ public class TrukController : MonoBehaviour
 
         Instantiate(deathParticles, boostParticleSpawn.position, Quaternion.identity, boostParticleSpawn);
 
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1.5f);
 
         WipeDownSpawn();
 
-        yield return new WaitForSeconds(1.1f);
+        yield return new WaitForSeconds(1.0f);
 
         FindObjectOfType<SceneSwitch>().ToDie();
 

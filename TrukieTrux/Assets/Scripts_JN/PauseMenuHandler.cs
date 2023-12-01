@@ -11,14 +11,51 @@ public class PauseMenuHandler : MonoBehaviour
 
     public bool isStartMenu;
 
-    void Start()
+
+    public GameObject pauseMenu;
+    public GameObject controlsMenu;
+
+    void Update()
     {
+        if (isStartMenu)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (pauseMenu.activeSelf)
+            {
+                pauseMenu.SetActive(false);
+            }
+            else
+                pauseMenu.SetActive(true);
+        }
+
     }
-
-
 
     public void ChangeVolume()
     {
         StaticStats.volume = mainMenuAudioSlider.value;
     }
+
+
+    public void OnQuit()
+    {
+        Application.Quit();
+    }
+
+    public void OnResume()
+    {
+        pauseMenu.SetActive(false);
+    }
+
+    public void OnControls()
+    {
+        if (controlsMenu.activeSelf)
+        {
+            controlsMenu.SetActive(false);
+        }
+        else
+            controlsMenu.SetActive(true);
+    }
+
 }

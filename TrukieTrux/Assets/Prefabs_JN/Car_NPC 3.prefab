@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1430464192128261633}
   - component: {fileID: 7762837804338594929}
   - component: {fileID: 5609609300075015418}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: mirrors
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 8788498596301301342}
   - component: {fileID: 2311923165651462209}
   - component: {fileID: 3413474726745787050}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GRILL.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 1605252331418803565}
   - component: {fileID: 7320014172315198495}
   - component: {fileID: 2308810047308462279}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bumper.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,7 +254,7 @@ GameObject:
   - component: {fileID: 6365389871103456491}
   - component: {fileID: 8601288111152637723}
   - component: {fileID: 4920598206625363577}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: tire 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 6024045953663575466}
   - component: {fileID: 5399111141382308235}
   - component: {fileID: 1528207523770769870}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GRILL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -415,7 +415,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3025238854718681032}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: goodpls-pickup-truck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 8662629275865126539}
   - component: {fileID: 4970449668344577000}
   - component: {fileID: 5335261079684365944}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: wheel rim.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -537,7 +537,7 @@ GameObject:
   - component: {fileID: 621443561616927328}
   - component: {fileID: 6034752140241223977}
   - component: {fileID: 3293525169705842275}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bumper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,7 +621,7 @@ GameObject:
   - component: {fileID: 8165826116036034351}
   - component: {fileID: 1105229213253585871}
   - component: {fileID: 5943842540347147632}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: taillight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -702,7 +702,7 @@ GameObject:
   - component: {fileID: 1793956921958766088}
   - component: {fileID: 1051489949154396040}
   - component: {fileID: 6988853297987668321}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: rolla body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -786,7 +786,7 @@ GameObject:
   - component: {fileID: 3754742781505882779}
   - component: {fileID: 4402623444554459631}
   - component: {fileID: 7986260195069838443}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: headlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -867,7 +867,7 @@ GameObject:
   - component: {fileID: 5324728496173158882}
   - component: {fileID: 9030801464788261188}
   - component: {fileID: 6939511635409136385}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Old Crate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -950,7 +950,7 @@ GameObject:
   - component: {fileID: 6084375973008749237}
   - component: {fileID: 6084375973008749236}
   - component: {fileID: 6888576334804542795}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Car_NPC 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -989,11 +989,12 @@ MonoBehaviour:
   moveInterval: 0.8
   waitTime: 0
   zDisplacement: 8.94
-  carDist: 13.7
+  carDist: 38.3
   passChance: 0.1
-  carIgnore:
+  carLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 256
+  isZigZagger: 0
 --- !u!54 &6084375973008749237
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1184,7 +1185,7 @@ GameObject:
   - component: {fileID: 8630696149110549143}
   - component: {fileID: 5736432185649606176}
   - component: {fileID: 5955091862098911640}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: tire 0.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1265,7 +1266,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7730109116387429931}
   - component: {fileID: 1728753285047036599}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1359,7 +1360,7 @@ GameObject:
   - component: {fileID: 8638626081431905507}
   - component: {fileID: 5692416810530975950}
   - component: {fileID: 4259409007996881738}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LICENSE PLATE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1440,7 +1441,7 @@ GameObject:
   - component: {fileID: 6733605927706787204}
   - component: {fileID: 7686473037078259729}
   - component: {fileID: 5029432264352803827}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: exhaust.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1521,7 +1522,7 @@ GameObject:
   - component: {fileID: 1748378080445852812}
   - component: {fileID: 5833318886734205392}
   - component: {fileID: 2381312195014361256}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GRILL.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1602,7 +1603,7 @@ GameObject:
   - component: {fileID: 8933866293253818731}
   - component: {fileID: 3173008388710946945}
   - component: {fileID: 1238519608781663049}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: wheel rim
   m_TagString: Untagged
   m_Icon: {fileID: 0}

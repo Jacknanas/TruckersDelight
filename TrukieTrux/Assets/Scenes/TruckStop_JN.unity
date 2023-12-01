@@ -6028,7 +6028,7 @@ MonoBehaviour:
   - of Angry Town
   - The Freakshow
   - Funkmaster
-  levelOneRunLength: 500
+  levelOneRunLength: 420
   levelOnePay: 100
   massMod:
     serializedVersion: 2
@@ -42564,8 +42564,8 @@ MonoBehaviour:
   currentPrice: 100
   basePrice: 100
   descriptionBox: {fileID: 1774713812}
-  description: Increases turbo force by 5%, turbo kicks in when you switch to a higher
-    gear at close to max speed.
+  description: Increases turbo force by 10%, turbo kicks in when you switch to a
+    higher gear at close to max speed.
   infoButton: {fileID: 435908732}
   buyButton: {fileID: 217893941}
   menu: {fileID: 290375999}

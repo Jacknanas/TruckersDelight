@@ -7,7 +7,7 @@ public class TruckStats
     public int currentMaxSpeed = 4;
     public int cargoMax = 500;
     public float acceleration = 2.5f;
-    public float breakDrag = 1.6f;
+    public float breakDrag = 1.0f;
     public float turnPower = 620f;
     public float turboForce = 60f;
     public TruckType truck = TruckType.Pickup;

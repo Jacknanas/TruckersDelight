@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1442530561276663267}
   - component: {fileID: 7810862052043493267}
   - component: {fileID: 5334434123391969048}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: mirrors
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 9216956470424624489}
   - component: {fileID: 4838123695179313162}
   - component: {fileID: 5608184207445554586}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: wheel rim.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3325113138478949418}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: good-corolla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   - component: {fileID: 2250542167041138154}
   - component: {fileID: 669144034116045930}
   - component: {fileID: 7431932752123757187}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: rolla body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 8542261876897985741}
   - component: {fileID: 614867108369498157}
   - component: {fileID: 6170537534935633554}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: taillight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 3730498741257109881}
   - component: {fileID: 4235530789196620301}
   - component: {fileID: 7568869992595722121}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: headlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 6084375973008749237}
   - component: {fileID: 6084375973008749236}
   - component: {fileID: 6888576334804542795}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Car_NPC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -495,11 +495,12 @@ MonoBehaviour:
   moveInterval: 0.8
   waitTime: 0
   zDisplacement: 9
-  carDist: 15
+  carDist: 39.4
   passChance: 0.01
-  carIgnore:
+  carLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 256
+  isZigZagger: 0
 --- !u!54 &6084375973008749237
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -690,7 +691,7 @@ GameObject:
   - component: {fileID: 8077353361090945397}
   - component: {fileID: 5207573850806674882}
   - component: {fileID: 6159338806354602618}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: tire 0.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -772,7 +773,7 @@ GameObject:
   - component: {fileID: 8610826818576675416}
   - component: {fileID: 4910641283653701159}
   - component: {fileID: 6961477538642416178}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: wheel rim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -853,7 +854,7 @@ GameObject:
   - component: {fileID: 8087465317151715073}
   - component: {fileID: 5269603610519141164}
   - component: {fileID: 4378228438594617512}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LICENSE PLATE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -934,7 +935,7 @@ GameObject:
   - component: {fileID: 6533720956527949414}
   - component: {fileID: 7887268584304944115}
   - component: {fileID: 4761082722746753041}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: exhaust.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1015,7 +1016,7 @@ GameObject:
   - component: {fileID: 9083023089653238895}
   - component: {fileID: 7800499354206018939}
   - component: {fileID: 9033801790844179684}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: tire 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,14 +12,14 @@ public class SpecialUpgradeDB : MonoBehaviour
 
 			OnAcquired = (TruckStats truckStats) =>
 			{
-				truckStats.cargoMax += Mathf.FloorToInt(truckStats.cargoMax * 0.1f);
-				truckStats.breakDrag += truckStats.breakDrag * 0.1f;
+				truckStats.cargoMax += Mathf.FloorToInt(truckStats.cargoMax * 0.12f);
+				truckStats.breakDrag += truckStats.breakDrag * 0.12f;
 				//BUT
 				truckStats.speedModifier -= truckStats.speedModifier * 0.02f;
 			},
 
 			Name = "Super Suspension",
-			Description = "Super Suspension: Increases cargo and breaking by 10%, but reduces overall speed by 2%",
+			Description = "Super Suspension: Increases cargo and breaking by 12%, but reduces overall speed by 2%",
 		}
 		
 		},
@@ -78,11 +78,11 @@ public class SpecialUpgradeDB : MonoBehaviour
 
 			OnAcquired = (TruckStats truckStats) =>
 			{
-				truckStats.turboForce += truckStats.turboForce * 0.2f;
+				truckStats.turboForce += truckStats.turboForce * 0.3f;
 			},
 
 			Name = "NOS",
-			Description = "NOS: Turbo force is increased by 20%.",
+			Description = "NOS: Turbo force is increased by 30%.",
 		}
 		
 		},
@@ -93,7 +93,7 @@ public class SpecialUpgradeDB : MonoBehaviour
 
 			OnAcquired = (TruckStats truckStats) =>
 			{
-				// somehow code this
+				truckStats.hasTruckersCap = true;
 			},
 
 			Name = "Trucker's Cap",
@@ -108,11 +108,42 @@ public class SpecialUpgradeDB : MonoBehaviour
 
 			OnAcquired = (TruckStats truckStats) =>
 			{
-				// somehow code this
+				truckStats.hasCB = true;
 			},
 
 			Name = "CB Radio",
 			Description = "CB Radio: chance of police chasing is reduced by 33%.",
+		}
+		
+		},
+
+		{
+		new SpecialUpgrade()
+		{
+
+			OnAcquired = (TruckStats truckStats) =>
+			{
+				truckStats.turnPower += truckStats.turnPower * 0.1f;
+				truckStats.speedModifier += truckStats.speedModifier * 0.05f;
+			},
+
+			Name = "Drifter's Sunglasses",
+			Description = "Drifer's Sunglasses: steering is increased by 10%, overall speed is increased by 5%",
+		}
+		
+		},
+
+		{
+		new SpecialUpgrade()
+		{
+
+			OnAcquired = (TruckStats truckStats) =>
+			{
+				truckStats.cargoMax += Mathf.FloorToInt(truckStats.cargoMax * 0.3f);
+			},
+
+			Name = "Big Bed",
+			Description = "Big Bed: cargo space is increased by 30%.",
 		}
 		
 		},

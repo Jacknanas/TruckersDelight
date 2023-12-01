@@ -115,13 +115,14 @@ public class TruckStopMenu : MonoBehaviour
             toPay = GetPay();
             StaticStats.song = null;
 
+            masteredDifficulty = StaticStats.masteredDiff;
 
             payAmount.text = $"{toPay} $";
             maxSpew = Mathf.FloorToInt(lastRun.pay / 200f) + 1;
         }
         else
         {
-            int manualPay = 2000;
+            int manualPay = 400;
             payAmount.text = $"{manualPay} $";
 
             maxSpew = Mathf.FloorToInt(manualPay / 200f) + 1;
@@ -155,6 +156,7 @@ public class TruckStopMenu : MonoBehaviour
             if (lastRun.difficulty > masteredDifficulty)
             {
                 masteredDifficulty = lastRun.difficulty;
+                StaticStats.masteredDiff = lastRun.difficulty;
             }
         }
 
@@ -221,8 +223,8 @@ public class TruckStopMenu : MonoBehaviour
         }
         else
         {
-            stats.playerBalance += 2000;
-            stats.lifeTimeBalance += 2000;
+            stats.playerBalance += 400;
+            stats.lifeTimeBalance += 400;
 
         }
 
@@ -423,7 +425,7 @@ public class TruckStopMenu : MonoBehaviour
         }
         else if (type == UpgradeType.TurboForce) 
         {
-            stats.turboForce = stats.turboForce + stats.turboForce * 0.05f;
+            stats.turboForce = stats.turboForce + stats.turboForce * 0.1f;
             stats.turbLevel++;
         }
         else if (type == UpgradeType.TruckType) 
@@ -633,7 +635,7 @@ public class TruckStopMenu : MonoBehaviour
 
     int GetRunLength(int rd)
     {
-        float truckMod = 3f / (truck+1f);
+        float truckMod = 3f / (truck+0.5f);
         float rng = Random.Range(-levelOneRunLength/truckMod, levelOneRunLength/truckMod);
     
         return Mathf.FloorToInt(levelOneRunLength + rng);

@@ -40,6 +40,14 @@ public class UpgradeButtonUI : MonoBehaviour
 
     public bool GetAvailability(int playerBalance)
     {
+
+        if (type == UpgradeType.Wildcard && currentLevel == 5)
+            return false;
+        else if (type == UpgradeType.TruckType && currentLevel == 6)
+            return false;
+        else if (type == UpgradeType.MaxSpeed && currentLevel == 13)
+            return false;
+
         return playerBalance >= currentPrice;
     }
 

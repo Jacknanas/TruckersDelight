@@ -62,10 +62,10 @@ public class GearChangingUI : MonoBehaviour
  
 
 
-                var direction = worldMousePosition - handleRB.gameObject.GetComponent<RectTransform>().position;
+                var direction = Vector3.Normalize(worldMousePosition - handleRB.gameObject.GetComponent<RectTransform>().position);
                 
                 if (direction.magnitude <= mouseDetectDistance)
-                    handleRB.AddForce(direction * 20f);
+                    handleRB.AddForce(direction * 4700f);
             }
         }
 
