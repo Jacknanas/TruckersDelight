@@ -28,6 +28,9 @@ public class TrukController : MonoBehaviour
     public Transform boostParticleSpawn;
     public GameObject boostParticle;
 
+    public RectTransform stallGuage;
+    public GameObject reverseWarning;
+
     public Text timeText;
     public Text targetTimeText;
 
@@ -49,6 +52,8 @@ public class TrukController : MonoBehaviour
     public float boostLength = 2.5f;
     public LayerMask road;
 
+    public float stallMeter;
+    public float stallLimit = 100f;
 
     [Header("Truck Variables")]
     public float truckMass;
@@ -56,8 +61,11 @@ public class TrukController : MonoBehaviour
     public float truckHeight;
     public float breakDrag;
 
+
+    //Special related
     bool hasForceField = false;
     bool hasTruckersCap = false;
+    public bool hasCB = false;
 
     [Header("Audio")]
     public AudioSource revIdle;
@@ -65,10 +73,23 @@ public class TrukController : MonoBehaviour
     public AudioClip idleSound;
     public AudioClip revSound;
 
+    public AudioSource sounderIn;
+    public AudioSource sounderOut;
+
+    [Header("Crashing")]
+
+    public float lowCrashThreshold = 4.5f;
+    public AnimationCurve lossCurve;
+    public GameObject crash;
+    public GameObject boxesFlying;
+    public GameObject deathParticles;
+
     float currentMaxSpeed = 0f;
     bool wasMaxSpeed = false;
 
     public int timeElapsed;
+
+    int startingMass = 0;
 
     bool isReversing = false;
 
@@ -99,6 +120,12 @@ public class TrukController : MonoBehaviour
         velocity = new Vector3(0f, 0f, 0f);
         restart.SetActive(false);
 
+        gearChangeUI.truckController = this;
+        gearChangeUI.sounderIn = sounderIn;
+        gearChangeUI.sounderOut = sounderOut;
+
+
+
         revIdle.loop = true;
 
         if (StaticStats.run != null)
@@ -113,6 +140,7 @@ public class TrukController : MonoBehaviour
         Run run = StaticStats.run;
 
         truckMass = run.mass;
+        startingMass = run.mass;
         targetTimeText.text = run.expectedTime.ToString();
     }
 
@@ -125,6 +153,20 @@ public class TrukController : MonoBehaviour
         turn = stats.turnPower;
         boostForce = stats.turboForce;
         speedModifier = stats.speedModifier;
+
+        hasCB = stats.hasCB;
+        hasTruckersCap = stats.hasTruckersCap;
+        hasForceField = stats.hasForceField;
+
+        if ((int)stats.truck == 0)
+        {
+            turn *= 0.3f;
+        }
+        else if ((int)stats.truck == 1)
+        {
+            turn *= 0.5f;
+        }
+
     }
 
 
@@ -199,6 +241,22 @@ public class TrukController : MonoBehaviour
         timeElapsed = Mathf.FloorToInt(Time.time - startTime);
 
         timeText.text = timeElapsed.ToString();
+
+        if (rb.velocity.magnitude < 0.5f)
+        {
+            reverseWarning.SetActive(true);
+        }
+        else if (reverseWarning.activeSelf)
+        {
+            StartCoroutine(WaitAFewReset());
+        }
+
+
+        if (truckMass <= 0f)
+        {
+            StartCoroutine(OnDie());
+        }
+
 
         //speed *= GetGroundMod();
 
@@ -387,9 +445,29 @@ public class TrukController : MonoBehaviour
         
             if (speed!=0 && !Input.GetKey(KeyCode.Space) && Input.GetKey("s") && !isReversing) // You cant press the Break in gear
             {
-                stall = true;     
-                speed = 0f;
+                speed -= (Time.deltaTime * (breakDrag - 0.5f));
+                
+                stallMeter += (Time.deltaTime * 40f);
+
+                stallGuage.localScale = new Vector3(1f, stallMeter / stallLimit, 1f);
+
+                if (stallMeter >= stallLimit) // stall
+                {
+                    stall = true;     
+                    speed = 0f;
+                    stallMeter = 0f;
+                    stallGuage.gameObject.GetComponent<AudioSource>().Play();
+                }
             }
+
+            else
+            {
+                stallMeter -= (Time.deltaTime * 15f);
+
+                stallMeter = Mathf.Clamp(stallMeter, 0f, stallLimit);
+                stallGuage.localScale = new Vector3(1f, stallMeter / stallLimit, 1f);
+            }
+
             //Debug.Log("Speed: " + speed);
             dashInfo.SetSpeedIndicator(rb, speed > currentMaxSpeed - 3f);
             rb.AddForce(transform.forward*speed * GetGroundMod());
@@ -404,6 +482,14 @@ public class TrukController : MonoBehaviour
                 stall = false;     
             }
         }
+    }
+
+    IEnumerator WaitAFewReset()
+    {
+        yield return new WaitForSeconds(2f);
+
+        reverseWarning.SetActive(false);
+
     }
 
 
@@ -452,7 +538,81 @@ public class TrukController : MonoBehaviour
 
     public void WipeDownSpawn()
     {
-        Instantiate(screenWipeDown, new Vector3(0f,1111f,0f), Quaternion.identity, transform.parent).GetComponent<Animator>();
+        Instantiate(screenWipeDown, new Vector3(0f,1111f,0f), Quaternion.identity, countDownText.gameObject.transform.parent);
+    }
+
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag != "Weighstation")
+        {
+            //If the GameObject has the same tag as specified, output this message in the console
+
+            float impact = collision.relativeVelocity.magnitude;
+
+            if (impact > lowCrashThreshold)
+            {
+                
+
+                var pitch = 30f / (impact + 1f);
+
+                if (pitch > 1.56f)
+                    pitch = 1.56f;
+
+
+                var volume = impact/60f + 1f/(4*impact) - 0.05f;
+
+                if (volume > 0.7f)
+                    volume = 0.7f;
+                
+                AudioSource crashSounder = Instantiate(crash, transform.position, Quaternion.identity).GetComponent<AudioSource>();
+
+
+                crashSounder.pitch = pitch;
+                crashSounder.volume = volume;
+                crashSounder.Play();
+
+                ContactPoint contact = collision.contacts[0];
+                Instantiate(boxesFlying, contact.point, Quaternion.identity, transform);
+
+
+                truckMass -= GetMassLoss(impact);
+
+                Debug.Log($"Mass at: {truckMass}");
+
+            }
+
+            Debug.Log($"SMASH {collision.relativeVelocity.magnitude}");
+        }
+    }
+
+    int GetMassLoss(float impact)
+    {
+        
+        float rat = impact / 45f;
+
+        float lossPerc = lossCurve.Evaluate(rat);
+
+        return Mathf.FloorToInt(startingMass * lossPerc);
+
+
+    }
+
+
+    IEnumerator OnDie()
+    {
+        isWaiting = true;
+
+        Instantiate(deathParticles, boostParticleSpawn.position, Quaternion.identity, boostParticleSpawn);
+
+        yield return new WaitForSeconds(2.5f);
+
+        WipeDownSpawn();
+
+        yield return new WaitForSeconds(1.1f);
+
+        FindObjectOfType<SceneSwitch>().ToDie();
+
     }
 
 }

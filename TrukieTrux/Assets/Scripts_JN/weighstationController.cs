@@ -10,6 +10,15 @@ public class weighstationController : MonoBehaviour
     [SerializeField]
     private PersistantData persistant;
 
+    public GameObject cop;
+    public Transform spawnPoint;
+
+    Transform player;
+    bool hasWeighed = false;
+
+    bool postDelay = false;
+
+
     [SerializeField]
     private TMP_Text tmp;
     // Start is called before the first frame update
@@ -21,6 +30,18 @@ public class weighstationController : MonoBehaviour
         else{
             tmp.text = "12012414";
         }
+
+        StartCoroutine(DelayPlayerFind());
+
+    }
+
+
+    IEnumerator DelayPlayerFind()
+    {
+        yield return new WaitForSeconds(1f);
+
+        player = FindObjectOfType<TrukController>().transform;
+        postDelay = true;
     }
 
 
@@ -30,6 +51,7 @@ public class weighstationController : MonoBehaviour
         {
             var mass = other.gameObject.GetComponent<TrukController>().truckMass;
             tmp.text = $"{mass} kg";
+            hasWeighed = true;
         }
 
         /*
@@ -41,4 +63,50 @@ public class weighstationController : MonoBehaviour
         }
         */
     }
+
+
+
+    void FixedUpdate()
+    {
+
+        if (postDelay)
+        {
+            if (player.position.x > transform.position.x && !hasWeighed)
+            {
+
+                Debug.Log("Passed weigh");
+
+                if (player.GetComponent<TrukController>().hasCB)
+                {
+                    if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.66f)
+                    {
+                        SpawnCops(2);
+                        
+                    }
+                    postDelay = false;
+                }
+                else
+                {
+                    SpawnCops(2);
+                    postDelay = false;
+                }
+
+            }
+
+        }
+
+    }
+
+
+    public void SpawnCops(int num)
+    {
+        Debug.Log("COPS A COMIN");
+
+        for (int i = 0; i < num; i++)
+        {
+            GameObject coppy = Instantiate(cop, spawnPoint.position, Quaternion.identity);
+            coppy.transform.Translate(i*6f, 0f, 0f);
+        }
+    }
+
 }

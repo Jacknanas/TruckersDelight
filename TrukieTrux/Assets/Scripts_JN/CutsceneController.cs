@@ -9,6 +9,10 @@ public class CutsceneController : MonoBehaviour
 
     public AudioSource rev;
 
+    public Transform canvas;
+
+    public GameObject screenWipeDown;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +32,11 @@ public class CutsceneController : MonoBehaviour
 
         rev.Play();
 
-        yield return new WaitForSeconds(4.3f);
+        yield return new WaitForSeconds(2.9f);
+
+        Instantiate(screenWipeDown, new Vector3(0f,1111f,0f), Quaternion.identity, canvas);
+
+        yield return new WaitForSeconds(1.3f);
 
         GetComponent<SceneSwitch>().ToMenu();
     }

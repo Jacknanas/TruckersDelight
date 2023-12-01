@@ -991,6 +991,9 @@ MonoBehaviour:
   zDisplacement: -9.3
   carDist: 18
   passChance: 0.005
+  carIgnore:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!54 &6084375973008749237
 Rigidbody:
   m_ObjectHideFlags: 0

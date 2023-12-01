@@ -18,6 +18,10 @@ public class NPC_Car : MonoBehaviour
     public float zDisplacement;
     public float carDist = 5f;
     public float passChance = 0.01f;
+    public LayerMask carIgnore;
+
+    public bool isZigZagger = false;
+    Vector3 lastTarget;
 
     float lastForce = 0f;
     bool isGoing = false;
@@ -76,7 +80,7 @@ public class NPC_Car : MonoBehaviour
             RaycastHit hit;
 
             // Does the ray intersect any objects excluding the player layer
-            if (!Physics.Raycast(transform.position, transform.forward, out hit, carDist))
+            if (!Physics.Raycast(transform.position, transform.forward, out hit, carDist, carIgnore))
             {
                 rb.AddForce(dir * moveForce);
                 
@@ -105,11 +109,15 @@ public class NPC_Car : MonoBehaviour
 
         }
 
+
+
+
+
         if (isRap)
         {
             transform.Translate(Vector3.up * Time.deltaTime * 5f);
             transform.Translate(Vector3.forward * Time.deltaTime * 0.7f);
-            transform.Rotate(0f, 0f, 0.6f* Time.deltaTime);
+            transform.Rotate(0f, 0f, 1.5f* Time.deltaTime);
 
             //rb.AddTorque(Vector3.up * Time.deltaTime * 1f);
 
@@ -120,7 +128,7 @@ public class NPC_Car : MonoBehaviour
 
         }
 
-        if (transform.position.x > targetPositions[targetPositions.Count-1].x-2.5f)
+        if (transform.position.x > targetPositions[targetPositions.Count-1].x-5.5f)
             Rapturize();
 
 
@@ -134,6 +142,14 @@ public class NPC_Car : MonoBehaviour
                     
             if (targetPositions[i].x > transform.position.x)
             {
+                
+
+                if (lastTarget != targetPositions[i] && isZigZagger)
+                {
+                    SwitchSide();
+                }
+
+                lastTarget = targetPositions[i];
 
                 return i;
             }
@@ -143,16 +159,16 @@ public class NPC_Car : MonoBehaviour
     }
 
 
+    void SwitchSide()
+    {
+        zDisplacement = -zDisplacement;
+    }
+
+
     public void RecieveRoadInformation(List<Vector3> pos)
     {
         targetPositions = pos;
 
-        Debug.Log($"count: {targetPositions.Count}");
-        /*for (int i = 0; i < pos.Count; i++)
-        {
-            targetXPositions.Add(pos[i].x);
-
-        }*/
     }
 
 

@@ -33,6 +33,7 @@ public class SplinesForRoad : MonoBehaviour
     public List<GameObject> npcCars;
     public Vector3 spawnPos;
     public float spawnRate;
+    public float zigzagChance;
     float lastSpawn;
 
     [Header("Scale Gen")]
@@ -44,6 +45,13 @@ public class SplinesForRoad : MonoBehaviour
     [Header("End Gen")]
     public GameObject depotAtEnd;
     public Vector3 depotDisplacement;
+
+    [Header("Obstacles")]
+    public GameObject rightLight;
+    public GameObject leftLight;
+    public GameObject depotSign;
+
+    public float lightSpawnRate = 0.01f;
 
     int current = 1;
 
@@ -128,6 +136,11 @@ public class SplinesForRoad : MonoBehaviour
             car.GetComponent<NPC_Car>().Initiate(this);
             car.GetComponent<NPC_Car>().moveForce += UnityEngine.Random.Range(-35f, 65f);
             car.GetComponent<NPC_Car>().carDist += UnityEngine.Random.Range(-4f, 4f);
+
+            if (UnityEngine.Random.Range(0.00f, 1.00f) <= zigzagChance)
+            {
+                car.GetComponent<NPC_Car>().isZigZagger = true;
+            }
 
             lastSpawn = Time.time;
         }
@@ -380,6 +393,32 @@ public class SplinesForRoad : MonoBehaviour
                 newVertices[v * 2] = new Vector3(dummyVertices[v].x + perpDir.x * roadWidth, 0f, dummyVertices[v].z + perpDir.y * roadWidth);
                 newVertices[v * 2 + 1] = new Vector3(dummyVertices[v].x - perpDir.x * roadWidth, 0f, dummyVertices[v].z - perpDir.y * roadWidth);
 
+
+                if (UnityEngine.Random.Range(0.00f, 1.00f) < lightSpawnRate)
+                {
+                    if (UnityEngine.Random.Range(0, 2) == 0)
+                    {
+                        SpawnLight(true, newVertices[v * 2]);
+
+                    }
+                    else
+                    {
+                        SpawnLight(false, newVertices[v * 2 + 1]);
+                    }
+
+                }
+                else if (UnityEngine.Random.Range(0.000f, 1.000f) < lightSpawnRate / 10f)
+                {
+                    if (UnityEngine.Random.Range(0, 2) == 0)
+                    {
+                        SpawnObstacle(true, newVertices[v * 2]);
+
+                    }
+                    else
+                    {
+                        SpawnObstacle(false, newVertices[v * 2 + 1]);
+                    }
+                }
             }
 
 
@@ -476,6 +515,40 @@ public class SplinesForRoad : MonoBehaviour
         GameObject newEnd = Instantiate(depotAtEnd, spawnPosition, Quaternion.identity);
 
         
+    }
+
+    void SpawnLight(bool isRight, Vector3 position)
+    {
+
+        if (isRight)
+        {
+            GameObject light = Instantiate(rightLight, position, Quaternion.identity);
+            light.transform.Rotate(0f, 90f, 0f);
+        }
+        else
+        {
+            GameObject light = Instantiate(rightLight, position, Quaternion.identity);
+            light.transform.Rotate(0f, -90f, 0f);
+        }
+        
+    }
+
+    void SpawnObstacle(bool isRight, Vector3 position)
+    {
+        if (isRight)
+        {
+            GameObject light = Instantiate(depotSign, position, Quaternion.identity);
+            //light.transform.Rotate(0f, 90f, 0f);
+
+            light.transform.Translate(0f,0f, 3f);
+
+        }
+        else
+        {
+            GameObject light = Instantiate(depotSign, position, Quaternion.identity);
+            //light.transform.Rotate(0f, -90f, 0f);
+            light.transform.Translate(0f,0f, -3f);
+        }
     }
 
 

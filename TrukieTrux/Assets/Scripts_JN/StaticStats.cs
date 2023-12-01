@@ -9,4 +9,8 @@ public static class StaticStats
 
     public static float remainingMass;
     public static int timeElapsed;
+
+    public static AudioClip song;
+
+    public static float volume = 1f;
 }

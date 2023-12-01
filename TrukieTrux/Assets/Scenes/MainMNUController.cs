@@ -5,19 +5,39 @@ using UnityEngine.SceneManagement;
 
 public class MainMNUController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public GameObject sliderMenu;
+    public GameObject screenWipeDown;
 
-    // Update is called once per frame
-    void Update()
+    public void WipeDownSpawn()
     {
-        
+        Instantiate(screenWipeDown, new Vector3(0f,1111f,0f), Quaternion.identity, sliderMenu.transform.parent);
     }
 
     public void StarGame(){
+
+        StartCoroutine(Delay());
+        
+       
+    }
+
+
+    public void OnSettingsButton()
+    {
+        if (sliderMenu.activeSelf)
+            sliderMenu.SetActive(false);
+        else
+            sliderMenu.SetActive(true);
+    }
+
+
+    IEnumerator Delay()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        WipeDownSpawn();
+
+        yield return new WaitForSeconds(1.3f);
         SceneManager.LoadScene (sceneBuildIndex:1);
     }
+
 }

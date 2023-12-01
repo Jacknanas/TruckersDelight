@@ -22,7 +22,10 @@ public class RunCardUI : MonoBehaviour
 	public TruckStopMenu menu;
 	public List<RunCardUI> otherCards;
 
+	
+
 	public bool isGameTime = false;
+	public bool isSummaryTime = false;
 
 	Run storedRun;
 
@@ -31,6 +34,8 @@ public class RunCardUI : MonoBehaviour
 	{
 		if (StaticStats.run != null && isGameTime)
             ExtractRunData();
+		else if (StaticStats.run != null && isSummaryTime)
+			ExtractRunDataForSummary();
 	}
 
 	void ExtractRunData()
@@ -38,6 +43,20 @@ public class RunCardUI : MonoBehaviour
 		SetCardInformation(StaticStats.run);
 	}
 
+	void ExtractRunDataForSummary()
+	{
+		Run run = StaticStats.run;
+
+		time.text = $"{StaticStats.timeElapsed} / {run.expectedTime}";
+		distance.text = run.length.ToString();
+		mass.text = $"{StaticStats.remainingMass} / {run.mass}";
+		difficulty.text = run.difficulty.ToString();
+		//type.text = run.type;
+		pay.text = run.pay.ToString();
+		
+		typeImage.sprite = typeIcons[(int)run.type];
+		storedRun = run;
+	}
 
 	public void SetCardInformation(Run run)
 	{

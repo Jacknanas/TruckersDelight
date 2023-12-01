@@ -26,6 +26,10 @@ public class UpgradeButtonUI : MonoBehaviour
 
     void Start()
     {
+        menu.InitializeUpgradeUI(type, this);
+
+        currentPrice = CalculatePrice(currentLevel);
+
         level.text = currentLevel.ToString();
         price.text = currentPrice.ToString();
         titleText.text = title;
@@ -56,6 +60,20 @@ public class UpgradeButtonUI : MonoBehaviour
     {
         descriptionBox.text = description;
     }
+
+    int CalculatePrice(int level)
+    {
+        int price = basePrice;
+
+        for (int i = 0; i < level; i++)
+        {
+            price *= 2;
+        }
+
+        return price;
+    }
+
+
 }
 
 public enum UpgradeType{

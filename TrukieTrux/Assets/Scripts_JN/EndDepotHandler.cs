@@ -16,7 +16,7 @@ public class EndDepotHandler : MonoBehaviour
             StaticStats.remainingMass = other.gameObject.GetComponent<TrukController>().truckMass;
             StaticStats.timeElapsed = other.gameObject.GetComponent<TrukController>().timeElapsed;
             
-            other.gameObject.GetComponent<TrukController>().WipeDownSpawn();
+            //other.gameObject.GetComponent<TrukController>().WipeDownSpawn();
 
             GetComponent<SceneSwitch>().ToEndAnim();
         }

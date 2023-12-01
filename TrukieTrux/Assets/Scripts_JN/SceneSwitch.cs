@@ -25,6 +25,9 @@ public class SceneSwitch : MonoBehaviour
         //StaticStats.truckStats = //assign truckStats here
     }
 
+
+
+
     IEnumerator GoDelay()
     {
         yield return new WaitForSeconds(1.2f);
@@ -38,7 +41,7 @@ public class SceneSwitch : MonoBehaviour
 
     IEnumerator EndDelay()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
         SceneManager.LoadScene (sceneBuildIndex:3);
     }
 
@@ -46,4 +49,23 @@ public class SceneSwitch : MonoBehaviour
     {
         SceneManager.LoadScene (sceneBuildIndex:1);
     }
+
+    public void ToDie()
+    {
+        SceneManager.LoadScene (sceneBuildIndex:4);
+    }
+
+
+    public void Restart()
+    {
+        StaticStats.run = null;
+        StaticStats.truckStats = null;
+        SceneManager.LoadScene (sceneBuildIndex:1);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }

@@ -35,6 +35,7 @@ public class TruckStopMenu : MonoBehaviour
     public GameObject garagePanels;
     public GameObject jobCards;
     public GameObject upgradePanel;
+    public GameObject musicPanel;
     public List<UpgradeButtonUI> upgrades;
     public List<SpecialUpgrade_UI> specialUpgrades;
     public Text descriptionText;
@@ -63,6 +64,15 @@ public class TruckStopMenu : MonoBehaviour
     public float levelOneRunLength = 500f;
     public int levelOnePay = 100;
 
+    [Header("Pay Mod")]
+    public AnimationCurve massMod;
+    public AnimationCurve timeMod;
+
+    [Header("For Summary Screen")]
+	public GameObject niceSticker;
+	public GameObject excSticker;
+	public GameObject yikesSticker;
+
     bool jobsOpen = false;
     bool upgradesOpen = false;
     bool isNextSumOpen = false;
@@ -74,6 +84,8 @@ public class TruckStopMenu : MonoBehaviour
     float lastSpewTime = 0f;
 
     int spews = 0;
+
+    int toPay = 0;
 
     void Start()
     {
@@ -99,7 +111,12 @@ public class TruckStopMenu : MonoBehaviour
 
         if (lastRun != null)
         {
-            payAmount.text = $"{lastRun.pay} $";
+
+            toPay = GetPay();
+            StaticStats.song = null;
+
+
+            payAmount.text = $"{toPay} $";
             maxSpew = Mathf.FloorToInt(lastRun.pay / 200f) + 1;
         }
         else
@@ -123,6 +140,29 @@ public class TruckStopMenu : MonoBehaviour
         walletPanel.SetActive(true);
     }
 
+    int GetPay()
+    {
+        float massRat = StaticStats.remainingMass / lastRun.mass;
+        float timeRat = StaticStats.timeElapsed / lastRun.expectedTime;
+
+
+        float massPostEv = massMod.Evaluate(massRat);
+        float timePostEv = timeMod.Evaluate(timeRat);
+
+
+        if (timeRat <= 1.01f && massRat >= 0.75f)
+        {
+            if (lastRun.difficulty > masteredDifficulty)
+            {
+                masteredDifficulty = lastRun.difficulty;
+            }
+        }
+
+        return Mathf.FloorToInt(((massPostEv + timePostEv) / 2f) * lastRun.pay);
+
+    }
+
+
 
     public void GetPlayerStats()
     {
@@ -131,6 +171,20 @@ public class TruckStopMenu : MonoBehaviour
         truck = (int) stats.truck;
         speedLevel = stats.currentMaxSpeed;
     }
+
+
+    public void OnMusicButton()
+    {
+        if (musicPanel.activeSelf)
+        {
+            musicPanel.SetActive(false);
+        }
+        else
+        {
+            musicPanel.SetActive(true);
+        }
+    }
+
 
     public void OnGoButton()
     {
@@ -149,9 +203,21 @@ public class TruckStopMenu : MonoBehaviour
 
         if (lastRun != null)
         {
-            stats.playerBalance += lastRun.pay;
-            stats.lifeTimeBalance += lastRun.pay;
+            stats.playerBalance += toPay;
+            stats.lifeTimeBalance += toPay;
 
+            if (toPay / lastRun.pay >= 1f)
+            {
+                excSticker.SetActive(true);
+            }
+            else if (toPay / lastRun.pay >= 0.7f)
+            {
+                niceSticker.SetActive(true);
+            }
+            else if (toPay / lastRun.pay <= 0.5f)
+            {
+                yikesSticker.SetActive(true);
+            }
         }
         else
         {
@@ -165,6 +231,19 @@ public class TruckStopMenu : MonoBehaviour
     public void OnNextButton()
     {
         PlayButtonSound();
+
+        if (stats != null)
+        {
+            if (stats.spUpgrades.Count > 0)
+            {
+                for (int i = 0; i < stats.spUpgrades.Count; i++)
+                {
+                    specialUpgrades[i].AddUpgrade(stats.spUpgrades[i], upgrades[0].descriptionBox);
+
+                }
+
+            }
+        }
 
         Instantiate(screenWipe, new Vector3(0f,0f,0f), Quaternion.identity, transform.parent);
         StartCoroutine(PanToGarage());
@@ -229,6 +308,10 @@ public class TruckStopMenu : MonoBehaviour
                 isNextSumOpen = true;
             }
         }
+
+        
+
+
 
     }
 
@@ -316,33 +399,39 @@ public class TruckStopMenu : MonoBehaviour
         if (type == UpgradeType.MaxSpeed)  //this will add one gear
         {
             stats.currentMaxSpeed++;
+            stats.speedLevel++;
         }
         else if (type == UpgradeType.CargoSpace) 
         {
             stats.cargoMax = Mathf.FloorToInt(stats.cargoMax + stats.cargoMax * 0.05f);
+            stats.cargoLevel++;
         }
         else if (type == UpgradeType.Acceleration) 
         {
             stats.acceleration = stats.acceleration + stats.acceleration * 0.05f;
+            stats.accLevel++;
         }
         else if (type == UpgradeType.Breaks) 
         {
             stats.breakDrag = stats.breakDrag + stats.breakDrag * 0.05f;
+            stats.breakLevel++;
         }
         else if (type == UpgradeType.TurningPower) 
         {
             stats.turnPower = stats.turnPower + stats.turnPower * 0.05f;
+            stats.turnLevel++;
         }
         else if (type == UpgradeType.TurboForce) 
         {
             stats.turboForce = stats.turboForce + stats.turboForce * 0.05f;
+            stats.turbLevel++;
         }
         else if (type == UpgradeType.TruckType) 
         {
             int truckAsNum = (int) stats.truck;
 
             stats.truck = (TruckType) truckAsNum+1;
-
+            stats.truckLevel++;
         }
         else //wildcard
         {
@@ -369,6 +458,45 @@ public class TruckStopMenu : MonoBehaviour
         GetPlayerStats();
 
         StaticStats.truckStats = stats;
+    }
+
+    public void InitializeUpgradeUI(UpgradeType type, UpgradeButtonUI upgradeUI)
+    {
+
+        if (type == UpgradeType.MaxSpeed)  //this will add one gear
+        {
+            upgradeUI.currentLevel = stats.speedLevel;
+        }
+        else if (type == UpgradeType.CargoSpace) 
+        {
+            upgradeUI.currentLevel = stats.cargoLevel;
+        }
+        else if (type == UpgradeType.Acceleration) 
+        {
+            upgradeUI.currentLevel = stats.accLevel;
+        }
+        else if (type == UpgradeType.Breaks) 
+        {
+            upgradeUI.currentLevel = stats.breakLevel;
+        }
+        else if (type == UpgradeType.TurningPower) 
+        {
+            upgradeUI.currentLevel = stats.turnLevel;
+        }
+        else if (type == UpgradeType.TurboForce) 
+        {
+            upgradeUI.currentLevel = stats.turbLevel;
+        }
+        else if (type == UpgradeType.TruckType) 
+        {
+            upgradeUI.currentLevel = stats.truckLevel;
+        }
+        else //wildcard
+        {
+            upgradeUI.currentLevel = stats.spUpgrades.Count + 1;
+
+        }
+
     }
 
     void AssessUpgradeAvailabilities()
